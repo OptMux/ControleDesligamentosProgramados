@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fluentui/react-components": "^9.32.1",
     "@fluentui/react-icons": "^2.0.218",
     "@fontsource/lato": "^5.0.12",
+    "@reduxjs/toolkit": "^1.9.5",
+    "@types/react-redux": "^7.1.26",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-redux": "^8.1.2",
     "react-router-dom": "^6.16.0",
     "styled-components": "^6.0.8"
   },

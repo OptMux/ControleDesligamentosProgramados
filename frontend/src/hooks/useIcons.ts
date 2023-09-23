@@ -1,6 +1,3 @@
-// isActive?: boolean;
-// status?: "hovered" | "pressed" | "disabled";
-
 import { ButtonHTMLAttributes, useMemo, useState } from "react";
 import type { OmxIconProps } from "../components/OmxIcon/OmxIcon";
 

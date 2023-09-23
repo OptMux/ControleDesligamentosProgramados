@@ -36,3 +36,16 @@ export const Logo = styled.img`
   margin: 10px;
   user-select: none;
 `;
+
+export const BottomText = styled.span`
+  position: absolute;
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  color: ${colors.tWhite};
+  bottom: 32px;
+  left: 50%;
+  transform: translate(-50%);
+`;

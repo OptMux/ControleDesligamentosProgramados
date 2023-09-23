@@ -19,7 +19,11 @@ export const Wrapper = styled.div<WrapperProps>`
       : ""}
 `;
 
-export const Button = styled.button`
+type ButtonProps = {
+  disabled: boolean;
+};
+
+export const Button = styled.button<ButtonProps>`
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -43,4 +47,12 @@ export const Button = styled.button`
     filter: brightness(1.05);
     box-shadow: 0px 0px 8px 0px #0000;
   }
+
+  ${({ disabled }) =>
+    disabled
+      ? css`
+          background: ${colors.gray};
+          color: ${colors.tWhite};
+        `
+      : ""}
 `;

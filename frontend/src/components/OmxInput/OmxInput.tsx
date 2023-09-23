@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as S from "./OmxInput.Styles";
 import {
   Eye24Filled,
@@ -34,6 +34,10 @@ export const OmxInput: React.FC<OmxInputProps> = ({
     }
     return type;
   }, [type, passwordIsVisible, isPassword]);
+
+  useEffect(() => {
+    setPasswordIsVisible(false);
+  }, [value]);
 
   return (
     <S.Wrapper fullWidth={fullWidth}>
