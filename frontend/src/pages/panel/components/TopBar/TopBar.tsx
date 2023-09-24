@@ -1,5 +1,5 @@
 import * as S from "./TopBar.Styles";
-import LogoImg from "../../../../assets/img/logo_minimal.svg";
+import LogoImg from "../../../../assets/img/logo.svg";
 import { AccountDropdown } from "./AccountDropdown/AccountDrodown";
 import { useEffect } from "react";
 import { useTypedSelector } from "../../../../hooks/useTypedSelector";
