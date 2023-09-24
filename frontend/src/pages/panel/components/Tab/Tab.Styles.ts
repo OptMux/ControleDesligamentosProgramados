@@ -7,6 +7,7 @@ export const Wrapper = styled.div`
   grid-area: tab;
   background: ${colors.bg};
   border-radius: 8px 0px 0px 0px;
+  overflow-y: hidden;
 `;
 
 export const TabWrapper = styled.div`
@@ -21,6 +22,8 @@ export const TabWrapper = styled.div`
 `;
 
 export const TabTitle = styled.span`
+  display: flex;
+  align-items: center;
   color: ${colors.black};
   font-size: 16px;
   font-style: normal;

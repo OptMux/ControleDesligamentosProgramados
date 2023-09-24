@@ -1,11 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { UserRole, type User } from "./user.types";
+import { UserRole, type UserSliceState } from "./user.types";
 import { doLogin } from "./userThunks";
-
-interface UserSliceState {
-  loggedUser: User | null;
-  isLoading: boolean;
-}
 
 const initialState: UserSliceState = {
   loggedUser: {

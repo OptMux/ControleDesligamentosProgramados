@@ -1,5 +1,6 @@
 import { styled } from "styled-components";
 import { colors } from "../../../../../../enums/colors";
+import { DefaultScrollbar } from "../../../../../../styles/scrollbar";
 
 export const Wrapper = styled.div`
   position: relative;
@@ -11,6 +12,8 @@ export const Wrapper = styled.div`
   background: ${colors.fg};
   box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.25);
   overflow-y: auto;
+
+  ${DefaultScrollbar}
 `;
 
 export const LogoWrapper = styled.div`

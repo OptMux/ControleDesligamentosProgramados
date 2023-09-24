@@ -8,3 +8,7 @@ export interface User {
   name: string;
   role: UserRole;
 }
+export interface UserSliceState {
+  loggedUser: User | null;
+  isLoading: boolean;
+}
