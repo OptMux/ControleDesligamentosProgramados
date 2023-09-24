@@ -53,7 +53,7 @@ export const OmxInput: React.FC<OmxInputProps> = ({
         type={currentType}
       />
 
-      {isPassword ? (
+      {isPassword && (value?.length ?? 0) > 0 ? (
         <S.InputButton
           type="button"
           onClick={() => setPasswordIsVisible(!passwordIsVisible)}

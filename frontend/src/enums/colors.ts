@@ -13,4 +13,5 @@ export const colors = Object.freeze({
   yellow: "#FBB13C",
   green: "#8CD867",
   red: "#FE6847",
+  lightBg: "#EFEFEF",
 });

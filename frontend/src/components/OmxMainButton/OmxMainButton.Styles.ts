@@ -51,8 +51,7 @@ export const Button = styled.button<ButtonProps>`
   ${({ disabled }) =>
     disabled
       ? css`
-          background: ${colors.gray};
-          color: ${colors.tWhite};
+          filter: saturate(0.5) !important;
         `
       : ""}
 `;

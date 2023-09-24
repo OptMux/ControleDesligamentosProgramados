@@ -37,6 +37,16 @@ export const Input = styled.input`
 `;
 
 export const InputButton = styled.button`
+  @keyframes FadeIn {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -48,4 +58,6 @@ export const InputButton = styled.button`
   outline: none;
   border-radius: 8px;
   background: ${colors.fg};
+  animation-name: FadeIn;
+  animation-duration: 0.5s;
 `;
