@@ -37,9 +37,6 @@ export const Header = styled.div`
   line-height: normal;
   text-transform: capitalize;
 
-  user-select: none;
-
-  cursor: pointer;
   flex-shrink: 0;
 
   box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.25);

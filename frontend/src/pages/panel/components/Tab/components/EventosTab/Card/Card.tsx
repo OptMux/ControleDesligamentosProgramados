@@ -77,7 +77,10 @@ export const Card: React.FC<CardProps> = function ({ event }) {
             <S.DateWrapper>
               {Object.entries(dates).map(([key, value]) => (
                 <React.Fragment key={key}>
-                  <Tag bgColor={value.tag.bgColor} textColor={value.tag.color}>
+                  <Tag
+                    $bgColor={value.tag.bgColor}
+                    $textColor={value.tag.color}
+                  >
                     {value.tag.name}
                   </Tag>
                   <span>{value.formattedDate}</span>
@@ -87,7 +90,7 @@ export const Card: React.FC<CardProps> = function ({ event }) {
           </S.DateGroupWrapper>
         </S.Header>
         <S.Body>
-          <Tag bgColor={colors.white}>Descrição:</Tag>
+          <Tag $bgColor={colors.white}>Descrição:</Tag>
           <S.Description>{event.description}</S.Description>
         </S.Body>
       </S.CardWrapper>

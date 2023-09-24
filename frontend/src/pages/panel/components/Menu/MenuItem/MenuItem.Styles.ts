@@ -2,7 +2,7 @@ import { css, styled } from "styled-components";
 import { colors } from "../../../../../enums/colors";
 
 interface ButtonProps {
-  isActive?: boolean;
+  $isActive?: boolean;
 }
 
 export const Button = styled.button<ButtonProps>`
@@ -23,8 +23,8 @@ export const Button = styled.button<ButtonProps>`
   border: none;
   cursor: pointer;
 
-  ${({ isActive }) =>
-    isActive
+  ${({ $isActive }) =>
+    $isActive
       ? css`
           background: ${colors.bg};
           color: ${colors.black};

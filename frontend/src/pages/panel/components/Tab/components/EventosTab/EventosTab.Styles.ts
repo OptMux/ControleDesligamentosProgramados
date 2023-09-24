@@ -21,6 +21,7 @@ export const Wrapper = styled.div`
 `;
 
 export const Header = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -59,4 +60,12 @@ export const Button = styled.button`
     filter: brightness(1.05);
     box-shadow: 0px 0px 8px 0px #0000;
   }
+`;
+
+export const SearchBoxFloatingWrapper = styled.div`
+  position: absolute;
+  top: 50%;
+  right: 160px;
+  transform: translateY(-50%);
+  z-index: 8000;
 `;

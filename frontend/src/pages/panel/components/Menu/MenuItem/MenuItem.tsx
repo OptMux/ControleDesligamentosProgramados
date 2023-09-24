@@ -35,7 +35,7 @@ export const MenuItem: React.FC<MenuItemProps> = function ({
   );
 
   return (
-    <S.Button isActive={isActive} onClick={() => onClick?.(id)}>
+    <S.Button $isActive={isActive} onClick={() => onClick?.(id)}>
       <S.IconWrapper>
         <Icon color={iconColor} />
       </S.IconWrapper>{" "}
