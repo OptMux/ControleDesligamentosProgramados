@@ -77,6 +77,8 @@ export const Dropdown = styled.div`
   min-height: 38px;
   cursor: pointer;
 
+  z-index: 9000000;
+
   &::before {
     content: "";
     display: block;

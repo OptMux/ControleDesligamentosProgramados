@@ -9,10 +9,12 @@ export const Tab: React.FC = function () {
   const { currentTab } = useContext(TabContext);
   return (
     <S.Wrapper>
-      {{
-        [TabName.eventos]: () => <EventosTab />,
-        [TabName.logs]: () => <LogsTab />,
-      }[currentTab]?.()}
+      <S.TabWrapper>
+        {{
+          [TabName.eventos]: () => <EventosTab />,
+          [TabName.logs]: () => <LogsTab />,
+        }[currentTab]?.()}
+      </S.TabWrapper>
     </S.Wrapper>
   );
 };

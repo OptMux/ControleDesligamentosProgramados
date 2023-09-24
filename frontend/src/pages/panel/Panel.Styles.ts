@@ -5,6 +5,7 @@ export const Wrapper = styled.div`
   display: grid;
   width: 100vw;
   height: 100vh;
+  max-height: 100vh;
   grid-template-areas:
     "topBar topBar"
     "menu tab";
