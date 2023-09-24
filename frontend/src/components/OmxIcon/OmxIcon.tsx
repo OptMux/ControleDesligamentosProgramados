@@ -12,6 +12,10 @@ export interface OmxIconProps {
   activeHoverIcon: React.FC<IconProps>;
   isActive?: boolean;
   status?: "hovered" | "pressed" | "disabled";
+  colorHovered?: string;
+  colorPressed?: string;
+  colorDisabled?: string;
+  colorIdle?: string;
 }
 
 export const OmxIcon: React.FC<OmxIconProps> = function ({
@@ -21,6 +25,10 @@ export const OmxIcon: React.FC<OmxIconProps> = function ({
   activeHoverIcon,
   isActive,
   status,
+  colorHovered = colors.gray,
+  colorPressed = colors.darkBlue,
+  colorDisabled = colors.tBlack,
+  colorIdle = colors.black,
 }) {
   const icons = useMemo(() => {
     return {
@@ -31,15 +39,15 @@ export const OmxIcon: React.FC<OmxIconProps> = function ({
   const CurrentIcon = useMemo(() => {
     switch (status) {
       case "hovered":
-        return { Icon: icons.hover, color: colors.gray };
+        return { Icon: icons.hover, color: colorHovered };
       case "pressed":
-        return { Icon: icons.hover, color: colors.darkBlue };
+        return { Icon: icons.hover, color: colorPressed };
       case "disabled":
-        return { Icon: icons.idle, color: colors.tBlack };
+        return { Icon: icons.idle, color: colorDisabled };
       default:
-        return { Icon: icons.idle, color: colors.black };
+        return { Icon: icons.idle, color: colorIdle };
     }
-  }, [icons, status]);
+  }, [icons, status, colorHovered, colorPressed, colorDisabled, colorIdle]);
   return (
     <>
       <CurrentIcon.Icon color={CurrentIcon.color} />

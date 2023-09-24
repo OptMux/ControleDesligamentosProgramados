@@ -1,18 +1,24 @@
-import { styled } from "styled-components";
+import { css, styled } from "styled-components";
 import { colors } from "../../../../../../../enums/colors";
 
 export const Wrapper = styled.div`
-  width: 100%;
   display: flex;
+  width: 100%;
   column-gap: 8px;
+
+  &:not(:hover) {
+    .options-wrapper {
+      display: none;
+    }
+  }
 `;
 
 export const CardWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: auto;
   min-height: 56px;
-
+  flex-grow: 1;
   background: ${colors.bg};
   border-radius: 8px;
   box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.25);
@@ -40,6 +46,72 @@ export const Header = styled.div`
   flex-shrink: 0;
 
   box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.25);
+`;
+
+export const OptionsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  height: 100%;
+  width: 56px;
+  min-width: 56px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: ${colors.fg};
+`;
+
+interface OptionButtonProps {
+  $pressAndHoldTimeoutInMilliseconds?: number;
+}
+
+export const OptionButton = styled.button<OptionButtonProps>`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+
+  border: none;
+  outline: none;
+  cursor: pointer;
+
+  background: #0000;
+
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: ${colors.grayBg};
+  }
+
+  ${({ $pressAndHoldTimeoutInMilliseconds }) =>
+    $pressAndHoldTimeoutInMilliseconds
+      ? css`
+          &::before {
+            position: absolute;
+            content: "";
+            top: 0;
+            left: 0;
+            display: block;
+            width: 0;
+            height: 100%;
+            background: ${colors.red};
+            opacity: 0.5;
+          }
+
+          &:active {
+            &::before {
+              width: 100%;
+              transition: width ${$pressAndHoldTimeoutInMilliseconds}ms ease-in;
+            }
+          }
+        `
+      : ""}
 `;
 
 export const Body = styled.div`

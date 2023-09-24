@@ -92,7 +92,13 @@ export const EventosTab: React.FC = function () {
             onClick={() => setIsOpen(monthObject.id)}
           >
             {monthObject.events.map((event) => (
-              <Card key={event.id} event={event} />
+              <Card
+                key={event.id}
+                event={event}
+                onDelete={(currentEvent) => {
+                  alert(`Deleting ${currentEvent.title}`);
+                }}
+              />
             ))}
           </OmxAccordionItem>
         ))}

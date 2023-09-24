@@ -1,9 +1,17 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import type { SystemEvent } from "../../../../../../../store/ducks/events/events.types";
 import * as S from "./Card.Styles";
 import { formatDate } from "../../../../../../../utils/format";
 import { colors } from "../../../../../../../enums/colors";
 import { Tag } from "../../../../../../../styles/tag";
+import { OmxIcon } from "../../../../../../../components/OmxIcon/OmxIcon";
+import { useIcons } from "../../../../../../../hooks/useIcons";
+import {
+  Delete24Filled,
+  Delete24Regular,
+  Pen24Filled,
+  Pen24Regular,
+} from "@fluentui/react-icons";
 
 const DATE_FORMAT = "DD/MM/YY às HH:mm";
 
@@ -20,9 +28,21 @@ interface DateData {
 
 interface CardProps {
   event: SystemEvent;
+  onDelete?: (event: SystemEvent) => void;
 }
 
-export const Card: React.FC<CardProps> = function ({ event }) {
+const DELETE_IN_MILLISECONDS = 1000;
+
+export const Card: React.FC<CardProps> = function ({ event, onDelete }) {
+  const penIcon = useIcons();
+  const trashIcon = useIcons();
+
+  const deleteTimeout = useRef<number>();
+
+  const onDeleteRef = useRef<typeof onDelete>();
+
+  onDeleteRef.current = onDelete;
+
   const dates: {
     start: DateData;
     finish?: DateData;
@@ -68,6 +88,13 @@ export const Card: React.FC<CardProps> = function ({ event }) {
     };
   }, [event.startDate, event.startedAt, event.finishDate, event.finishedAt]);
 
+  useEffect(() => {
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      clearTimeout(deleteTimeout.current);
+    };
+  }, []);
+
   return (
     <S.Wrapper>
       <S.CardWrapper>
@@ -94,6 +121,46 @@ export const Card: React.FC<CardProps> = function ({ event }) {
           <S.Description>{event.description}</S.Description>
         </S.Body>
       </S.CardWrapper>
+      <S.OptionsWrapper className="options-wrapper">
+        <S.OptionButton {...penIcon.buttonProps}>
+          <OmxIcon
+            idleIcon={Pen24Regular}
+            hoverIcon={Pen24Filled}
+            activeIcon={Pen24Filled}
+            activeHoverIcon={Pen24Regular}
+            {...penIcon.iconProps}
+          />
+        </S.OptionButton>
+        <S.OptionButton
+          {...trashIcon.buttonProps}
+          $pressAndHoldTimeoutInMilliseconds={1000}
+          onMouseDown={(ev) => {
+            clearTimeout(deleteTimeout.current);
+            deleteTimeout.current = setTimeout(() => {
+              onDeleteRef.current?.(event);
+            }, DELETE_IN_MILLISECONDS);
+
+            trashIcon.buttonProps.onMouseDown?.(ev);
+          }}
+          onMouseUp={(ev) => {
+            clearTimeout(deleteTimeout.current);
+            trashIcon.buttonProps.onMouseUp?.(ev);
+          }}
+          onMouseLeave={(ev) => {
+            clearTimeout(deleteTimeout.current);
+            trashIcon.buttonProps.onMouseLeave?.(ev);
+          }}
+        >
+          <OmxIcon
+            idleIcon={Delete24Regular}
+            hoverIcon={Delete24Filled}
+            activeIcon={Delete24Filled}
+            activeHoverIcon={Delete24Regular}
+            colorPressed={colors.red}
+            {...trashIcon.iconProps}
+          />
+        </S.OptionButton>
+      </S.OptionsWrapper>
     </S.Wrapper>
   );
 };
