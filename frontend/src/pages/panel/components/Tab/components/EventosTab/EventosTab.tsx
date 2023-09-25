@@ -8,7 +8,8 @@ import { Month } from "../../../../../../enums/months";
 import { getMonth } from "../../../../../../utils/getMonth";
 import { SystemEvent } from "../../../../../../store/ducks/events/events.types";
 import { Card } from "./Card/Card";
-import { OmxSearchBox } from "../../../../../../components/SearchBox/OmxSearchBox";
+import { OmxSearchBox } from "../../../../../../components/OmxSearchBox/OmxSearchBox";
+import { OmxEventForm } from "../../../../../../components/OmxEventForm/OmxEventForm";
 
 type MonthId = `${Month}-${number}`;
 type MonthObject = { id: MonthId; name: Month; events: SystemEvent[] };
@@ -18,6 +19,7 @@ export const EventosTab: React.FC = function () {
   const { accordionItems, setIsOpen } = useAccordion();
 
   const [isSearchBoxVisible, setIsSearchBoxVisible] = useState(false);
+  const [isEventFormVisible, setIsEventFormVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [valueToSearch, setValueToSearch] = useState(searchValue);
 
@@ -53,7 +55,7 @@ export const EventosTab: React.FC = function () {
         <PS.TabTitle>
           eventos
           {valueToSearch !== ""
-            ? ` Exibindo resultados para: ${valueToSearch}`
+            ? ` (Exibindo resultados para: ${valueToSearch})`
             : ""}
         </PS.TabTitle>
         <S.HeaderButtonsWrapper>
@@ -80,7 +82,25 @@ export const EventosTab: React.FC = function () {
               />
             </S.SearchBoxFloatingWrapper>
           )}
-          <S.Button>Adicionar novo</S.Button>
+          <S.Button
+            onClick={() => {
+              setSearchValue("");
+              setIsSearchBoxVisible(false);
+              setIsEventFormVisible(!isEventFormVisible);
+            }}
+          >
+            Adicionar novo
+          </S.Button>
+          {isEventFormVisible && (
+            <S.EventFormFloatingWrapper>
+              <OmxEventForm
+                onConfirm={() => {
+                  setIsEventFormVisible(false);
+                }}
+                onCancel={() => setIsEventFormVisible(false)}
+              />
+            </S.EventFormFloatingWrapper>
+          )}
         </S.HeaderButtonsWrapper>
       </S.Header>
       <S.Wrapper>

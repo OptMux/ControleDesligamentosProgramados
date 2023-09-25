@@ -149,3 +149,10 @@ export const Description = styled.span`
   font-weight: 500;
   line-height: normal;
 `;
+
+export const EventFormFloatingWrapper = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 8000;
+`;

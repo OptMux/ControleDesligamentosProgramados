@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { SystemEvent } from "../../../../../../../store/ducks/events/events.types";
 import * as S from "./Card.Styles";
 import { formatDate } from "../../../../../../../utils/format";
@@ -12,6 +12,7 @@ import {
   Pen24Filled,
   Pen24Regular,
 } from "@fluentui/react-icons";
+import { OmxEventForm } from "../../../../../../../components/OmxEventForm/OmxEventForm";
 
 const DATE_FORMAT = "DD/MM/YY às HH:mm";
 
@@ -34,6 +35,7 @@ interface CardProps {
 const DELETE_IN_MILLISECONDS = 1000;
 
 export const Card: React.FC<CardProps> = function ({ event, onDelete }) {
+  const [isEditEventFormVisible, setIsEditEventFormVisible] = useState(false);
   const penIcon = useIcons();
   const trashIcon = useIcons();
 
@@ -60,7 +62,8 @@ export const Card: React.FC<CardProps> = function ({ event, onDelete }) {
         finish: {
           formattedDate: formatDate(event.finishDate, DATE_FORMAT),
           tag: {
-            name: "Fim",
+            name: "Término",
+            color: colors.white,
             bgColor: colors.yellow,
           },
         },
@@ -122,7 +125,10 @@ export const Card: React.FC<CardProps> = function ({ event, onDelete }) {
         </S.Body>
       </S.CardWrapper>
       <S.OptionsWrapper className="options-wrapper">
-        <S.OptionButton {...penIcon.buttonProps}>
+        <S.OptionButton
+          {...penIcon.buttonProps}
+          onClick={() => setIsEditEventFormVisible(!isEditEventFormVisible)}
+        >
           <OmxIcon
             idleIcon={Pen24Regular}
             hoverIcon={Pen24Filled}
@@ -161,6 +167,17 @@ export const Card: React.FC<CardProps> = function ({ event, onDelete }) {
           />
         </S.OptionButton>
       </S.OptionsWrapper>
+      {isEditEventFormVisible && (
+        <S.EventFormFloatingWrapper>
+          <OmxEventForm
+            event={event}
+            onConfirm={() => {
+              setIsEditEventFormVisible(false);
+            }}
+            onCancel={() => setIsEditEventFormVisible(false)}
+          />
+        </S.EventFormFloatingWrapper>
+      )}
     </S.Wrapper>
   );
 };

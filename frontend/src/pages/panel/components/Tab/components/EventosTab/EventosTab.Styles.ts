@@ -7,7 +7,7 @@ export const Wrapper = styled.div`
   flex-direction: column;
   row-gap: 16px;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   padding-left: 8px;
   padding-right: 8px;
   padding-top: 8px;
@@ -67,5 +67,12 @@ export const SearchBoxFloatingWrapper = styled.div`
   top: 50%;
   right: 160px;
   transform: translateY(-50%);
+  z-index: 8000;
+`;
+
+export const EventFormFloatingWrapper = styled.div`
+  position: absolute;
+  top: -40px;
+  right: 0;
   z-index: 8000;
 `;
