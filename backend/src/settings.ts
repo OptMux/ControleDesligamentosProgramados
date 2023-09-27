@@ -7,4 +7,5 @@ export const settings = {
   port: process.env?.PORT ?? 3000,
   defaultUsername: process.env?.DEFAULT_USERNAME ?? "admin",
   defaultPassword: process.env?.DEFAULT_PASSWORD ?? "admin",
+  debugMode: process.env.DEBUG_MODE === "true",
 };

@@ -1,22 +1,41 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { User, UserRole } from "./user.types";
+import { User } from "./user.types";
+import { performLogin, performRecoverSession } from "../../../services/auth";
 
 interface LoginPayload {
   username: string;
   password: string;
-  callback?: () => void;
+  callback?: (err: Error | null, user: User | null) => void;
+}
+
+interface RecoverSessionPayload {
+  callback?: (err: Error | null, user: User | null) => void;
 }
 
 export const doLogin = createAsyncThunk<User, LoginPayload>(
   "user/login",
   async ({ username, password, callback }) => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log(username, password);
-    callback?.();
-    return {
-      id: password.length,
-      name: username,
-      role: UserRole.admin,
-    } as User;
+    try {
+      const data = await performLogin(username, password);
+      callback?.(null, data);
+      return data;
+    } catch (err: any) {
+      callback?.(err, null);
+      throw err;
+    }
+  }
+);
+
+export const recoverSession = createAsyncThunk<User, RecoverSessionPayload>(
+  "user/recoverSession",
+  async ({ callback }) => {
+    try {
+      const data = await performRecoverSession();
+      callback?.(null, data);
+      return data;
+    } catch (err: any) {
+      callback?.(err, null);
+      throw err;
+    }
   }
 );

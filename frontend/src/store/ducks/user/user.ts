@@ -1,13 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { UserRole, type UserSliceState } from "./user.types";
-import { doLogin } from "./userThunks";
+import { type UserSliceState } from "./user.types";
+import { doLogin, recoverSession } from "./userThunks";
+import { performLogout } from "../../../services/auth";
 
 const initialState: UserSliceState = {
-  loggedUser: {
-    id: 0,
-    name: "Hideki",
-    role: UserRole.admin,
-  },
+  loggedUser: null,
   isLoading: false,
 };
 
@@ -16,22 +13,25 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     logout(state) {
+      performLogout();
       state.loggedUser = null;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(doLogin.pending, (state) => {
-      state.isLoading = true;
-      state.loggedUser = null;
-    });
-    builder.addCase(doLogin.fulfilled, (state, action) => {
-      state.loggedUser = action.payload;
-      state.isLoading = false;
-    });
-    builder.addCase(doLogin.rejected, (state, action) => {
-      console.log(action.error);
-      state.isLoading = false;
-      state.loggedUser = null;
+    [doLogin, recoverSession].forEach((reducer) => {
+      builder.addCase(reducer.pending, (state) => {
+        state.isLoading = true;
+        state.loggedUser = null;
+      });
+      builder.addCase(reducer.fulfilled, (state, action) => {
+        state.loggedUser = action.payload;
+        state.isLoading = false;
+      });
+      builder.addCase(reducer.rejected, (state, action) => {
+        console.log(action.error);
+        state.isLoading = false;
+        state.loggedUser = null;
+      });
     });
   },
 });

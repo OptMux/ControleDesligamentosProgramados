@@ -2,7 +2,7 @@ import { styled, css } from "styled-components";
 import { colors } from "../../enums/colors";
 
 type WrapperProps = {
-  fullWidth: boolean;
+  $fullWidth: boolean;
 };
 
 export const Wrapper = styled.div<WrapperProps>`
@@ -11,8 +11,8 @@ export const Wrapper = styled.div<WrapperProps>`
   column-gap: 6px;
   height: 48px;
   min-height: 48px;
-  ${({ fullWidth }) =>
-    fullWidth
+  ${({ $fullWidth }) =>
+    $fullWidth
       ? css`
           width: 100%;
         `

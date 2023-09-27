@@ -17,7 +17,7 @@ export const OmxMainButton: React.FC<OmxMainButtonProps> = function ({
   onClick,
 }) {
   return (
-    <S.Wrapper fullWidth={fullWidth}>
+    <S.Wrapper $fullWidth={fullWidth}>
       <S.Button type={type} onClick={onClick} disabled={disabled}>
         {text}
       </S.Button>

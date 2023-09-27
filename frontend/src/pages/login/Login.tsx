@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastStatus } from "../../hooks/useToastPrivate";
 import { useToast } from "../../hooks/useToast";
 import { useDispatch } from "react-redux";
-import { doLogin } from "../../store/ducks/user/userThunks";
+import { doLogin, recoverSession } from "../../store/ducks/user/userThunks";
 
 const CURRENT_YEAR: number = new Date()?.getFullYear?.();
 
@@ -29,8 +29,8 @@ export const LoginPage: React.FC = function () {
     if (username === "" || password === "") {
       notify({
         id: "emptyLoginError",
-        title: "Erro de validação",
-        body: "O login ou senha não pode(m) ser(em) vazio(s)",
+        title: "Validation error",
+        body: "Username and password should not be empty",
         status: ToastStatus.warning,
       });
       return;
@@ -41,13 +41,23 @@ export const LoginPage: React.FC = function () {
       doLogin({
         username,
         password,
+        callback(err) {
+          if (err)
+            notify({
+              id: "loginError",
+              title: "Login Error",
+              body: err?.message,
+              status: ToastStatus.error,
+            });
+        },
       }) as any
     );
   }, [username, password, setUsername, setPassword, notify, dispatch]);
 
   useEffect(() => {
     if (user.loggedUser !== null) navigate("/panel");
-  }, [user.loggedUser, navigate]);
+    else dispatch(recoverSession({}) as any);
+  }, [user.loggedUser, navigate, dispatch]);
 
   return (
     <S.Wrapper>

@@ -39,7 +39,7 @@ export async function userLogin(
       },
       settings.jwtSecret,
       {
-        expiresIn: "10h",
+        expiresIn: "1d",
       },
       (err, token) => {
         if (err) reject(new Error("authentication error"));

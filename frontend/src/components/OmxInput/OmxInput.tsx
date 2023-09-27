@@ -40,7 +40,7 @@ export const OmxInput: React.FC<OmxInputProps> = ({
   }, [value]);
 
   return (
-    <S.Wrapper fullWidth={fullWidth}>
+    <S.Wrapper $fullWidth={fullWidth}>
       <S.Input
         onChange={(ev) => {
           const target: HTMLInputElement = ev.target as HTMLInputElement;
@@ -49,6 +49,7 @@ export const OmxInput: React.FC<OmxInputProps> = ({
         }}
         value={value}
         placeholder={placeholder}
+        autoComplete="off"
         spellCheck={false}
         type={currentType}
       />

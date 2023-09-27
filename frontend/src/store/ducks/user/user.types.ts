@@ -1,12 +1,7 @@
-export enum UserRole {
-  admin = "admin",
-  user = "user",
-}
-
 export interface User {
   id: number;
-  name: string;
-  role: UserRole;
+  username: string;
+  isAdmin: boolean;
 }
 export interface UserSliceState {
   loggedUser: User | null;
