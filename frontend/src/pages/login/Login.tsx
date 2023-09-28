@@ -9,6 +9,7 @@ import { ToastStatus } from "../../hooks/useToastPrivate";
 import { useToast } from "../../hooks/useToast";
 import { useDispatch } from "react-redux";
 import { doLogin, recoverSession } from "../../store/ducks/user/userThunks";
+import { OmxHead } from "../../components/OmxHead/OmxHead";
 
 const CURRENT_YEAR: number = new Date()?.getFullYear?.();
 
@@ -60,32 +61,35 @@ export const LoginPage: React.FC = function () {
   }, [user.loggedUser, navigate, dispatch]);
 
   return (
-    <S.Wrapper>
-      <S.Logo src={LogoImg} draggable={false} />
-      <S.FormWrapper
-        onSubmit={(ev) => {
-          ev.preventDefault();
-          onSubmit();
-        }}
-      >
-        <S.LoginWrapper>
-          <OmxInput
-            placeholder="Username"
-            value={username}
-            onInput={setUsername}
-            fullWidth
-          />
-          <OmxInput
-            placeholder="Password"
-            value={password}
-            onInput={setPassword}
-            type="password"
-            fullWidth
-          />
-        </S.LoginWrapper>
-        <OmxMainButton text="login" disabled={user.isLoading} />
-      </S.FormWrapper>
-      <S.BottomText>Copyright {CURRENT_YEAR} © OptMux</S.BottomText>
-    </S.Wrapper>
+    <>
+      <OmxHead title="Login" />
+      <S.Wrapper>
+        <S.Logo src={LogoImg} draggable={false} />
+        <S.FormWrapper
+          onSubmit={(ev) => {
+            ev.preventDefault();
+            onSubmit();
+          }}
+        >
+          <S.LoginWrapper>
+            <OmxInput
+              placeholder="Username"
+              value={username}
+              onInput={setUsername}
+              fullWidth
+            />
+            <OmxInput
+              placeholder="Password"
+              value={password}
+              onInput={setPassword}
+              type="password"
+              fullWidth
+            />
+          </S.LoginWrapper>
+          <OmxMainButton text="login" disabled={user.isLoading} />
+        </S.FormWrapper>
+        <S.BottomText>Copyright {CURRENT_YEAR} © OptMux</S.BottomText>
+      </S.Wrapper>
+    </>
   );
 };

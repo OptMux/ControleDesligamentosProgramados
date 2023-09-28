@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { OmxHead } from "../../components/OmxHead/OmxHead";
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -8,5 +9,9 @@ export const HomePage: React.FC = () => {
     navigate("/login");
   }, [navigate]);
 
-  return <></>;
+  return (
+    <>
+      <OmxHead />
+    </>
+  );
 };

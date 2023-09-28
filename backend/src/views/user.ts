@@ -45,7 +45,7 @@ userRouter.post("/", withAuth, onlyAdmin, async (req, res) => {
 
   const user = await createUser(username, password, isAdmin);
 
-  res.status(HttpStatus.OK).json({
+  res.status(HttpStatus.CREATED).json({
     message: "user created successfully",
     data: { user },
   });
@@ -64,9 +64,9 @@ userRouter.delete("/:userId", withAuth, onlyAdmin, async (req, res) => {
 
   if (result)
     return res.status(HttpStatus.OK).json({
-      message: "deleted user successfully",
+      message: "user deleted successfully",
     });
   res.status(HttpStatus.NOT_FOUND).json({
-    message: "user not found",
+    message: "event not found or already started/finished",
   });
 });
