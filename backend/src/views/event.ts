@@ -50,15 +50,12 @@ eventRouter.get("/", async (req, res) => {
     },
     ...(lastEvent
       ? {
-          nextPage: [
-            "/event",
-            new URLSearchParams({
-              limit: limit as any as string,
-              onlyActive: onlyActive as string,
-              idPageCursor: lastEvent.id,
-              datePageCursor: lastEvent.startDate.toISOString(),
-            }).toString(),
-          ].join("?"),
+          nextPage: new URLSearchParams({
+            limit: limit as any as string,
+            onlyActive: onlyActive as string,
+            idPageCursor: lastEvent.id,
+            datePageCursor: lastEvent.startDate.toISOString(),
+          }).toString(),
         }
       : null),
   });
