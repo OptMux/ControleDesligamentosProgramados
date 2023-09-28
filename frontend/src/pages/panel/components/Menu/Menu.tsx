@@ -6,8 +6,6 @@ import {
 } from "@fluentui/react-icons";
 import * as S from "./Menu.Styles";
 import { MenuItem, MenuItemProps } from "./MenuItem/MenuItem";
-import { useContext } from "react";
-import { TabContext } from "../../Panel";
 import { TabName } from "../../../../enums/tabs";
 
 const MENUS: MenuItemProps[] = [
@@ -25,9 +23,15 @@ const MENUS: MenuItemProps[] = [
   },
 ];
 
-export const Menu: React.FC = function () {
-  const { currentTab, setCurrentTab } = useContext(TabContext);
+interface MenuProps {
+  currentTab?: TabName;
+  onTabSelect?: (item: TabName) => void;
+}
 
+export const Menu: React.FC<MenuProps> = function ({
+  currentTab,
+  onTabSelect,
+}) {
   return (
     <S.Wrapper>
       {MENUS.map((menuItemProps) => (
@@ -35,7 +39,7 @@ export const Menu: React.FC = function () {
           key={menuItemProps.id}
           {...menuItemProps}
           isActive={menuItemProps.id === currentTab}
-          onClick={setCurrentTab}
+          onClick={onTabSelect}
         />
       ))}
     </S.Wrapper>

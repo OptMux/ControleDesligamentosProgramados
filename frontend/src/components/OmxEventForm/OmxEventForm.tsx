@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as S from "./OmxEventForm.Styles";
 import {
   CURRENT_YEAR,
@@ -10,6 +10,7 @@ import { ToastStatus } from "../../hooks/useToastPrivate";
 import { SystemEvent } from "../../store/ducks/events/events.types";
 
 interface DataProps {
+  event?: SystemEvent;
   name: string;
   description: string;
   start: Date;
@@ -18,6 +19,7 @@ interface DataProps {
 
 interface OmxSearchBoxProps {
   event?: SystemEvent;
+  isLoading?: boolean;
   onConfirm: (data: DataProps) => void;
   onCancel: () => void;
 }
@@ -90,6 +92,7 @@ const getDatePickerInputs = (formCreator: ReturnType<typeof useDateForm>) => {
 
 export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
   event,
+  isLoading = false,
   onConfirm,
   onCancel,
 }) {
@@ -107,7 +110,11 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
   const cancelRef = useRef<typeof onCancel>();
   const clickedRef = useRef<boolean>(false);
 
-  cancelRef.current = onCancel;
+  const onCancelHandler = useCallback(() => {
+    if (!isLoading) return onCancel?.();
+  }, [isLoading, onCancel]);
+
+  cancelRef.current = onCancelHandler;
 
   useEffect(() => {
     inputRef.current?.focus?.();
@@ -153,11 +160,13 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
   return (
     <S.WrapperForm
       ref={containerRef}
+      $isLoading={isLoading}
       onSubmit={(ev) => {
         ev.preventDefault();
         const form = ev.currentTarget;
         const data = new FormData(form);
         const resultData: DataProps = {
+          event,
           name: data.get("name") as string,
           description: data.get("description") as string,
           start: startDate.resultDate,
@@ -222,7 +231,7 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
           type="button"
           $isCancel
           onClick={() => {
-            onCancel();
+            onCancelHandler?.();
           }}
         >
           Cancelar

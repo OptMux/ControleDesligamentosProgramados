@@ -13,6 +13,10 @@ import {
   Pen24Regular,
 } from "@fluentui/react-icons";
 import { OmxEventForm } from "../../../../../../../components/OmxEventForm/OmxEventForm";
+import { useDispatch } from "react-redux";
+import { doUpdateEvent } from "../../../../../../../store/ducks/events/eventsThunks";
+import { useToast } from "../../../../../../../hooks/useToast";
+import { ToastStatus } from "../../../../../../../hooks/useToastPrivate";
 
 const DATE_FORMAT = "DD/MM/YY às HH:mm";
 
@@ -30,20 +34,31 @@ interface DateData {
 interface CardProps {
   event: SystemEvent;
   onDelete?: (event: SystemEvent) => void;
+  isLoading?: boolean;
 }
 
 const DELETE_IN_MILLISECONDS = 1000;
 
-export const Card: React.FC<CardProps> = function ({ event, onDelete }) {
+export const Card: React.FC<CardProps> = function ({
+  event,
+  onDelete,
+  isLoading = false,
+}) {
+  const dispatch = useDispatch();
   const [isEditEventFormVisible, setIsEditEventFormVisible] = useState(false);
   const penIcon = useIcons();
   const trashIcon = useIcons();
+  const notify = useToast();
 
   const deleteTimeout = useRef<number>();
 
   const onDeleteRef = useRef<typeof onDelete>();
 
   onDeleteRef.current = onDelete;
+
+  const canUpdate = useMemo(() => {
+    return !(event.startedAt && !event.finishedAt);
+  }, [event]);
 
   const dates: {
     start: DateData;
@@ -99,85 +114,116 @@ export const Card: React.FC<CardProps> = function ({ event, onDelete }) {
   }, []);
 
   return (
-    <S.Wrapper>
-      <S.CardWrapper>
-        <S.Header>
-          <span>{event.title}</span>
-          <S.DateGroupWrapper>
-            <S.DateWrapper>
-              {Object.entries(dates).map(([key, value]) => (
-                <React.Fragment key={key}>
-                  <Tag
-                    $bgColor={value.tag.bgColor}
-                    $textColor={value.tag.color}
-                  >
-                    {value.tag.name}
-                  </Tag>
-                  <span>{value.formattedDate}</span>
-                </React.Fragment>
-              ))}
-            </S.DateWrapper>
-          </S.DateGroupWrapper>
-        </S.Header>
-        <S.Body>
-          <Tag $bgColor={colors.white}>Descrição:</Tag>
-          <S.Description>{event.description}</S.Description>
-        </S.Body>
-      </S.CardWrapper>
-      <S.OptionsWrapper className="options-wrapper">
-        <S.OptionButton
-          {...penIcon.buttonProps}
-          onClick={() => setIsEditEventFormVisible(!isEditEventFormVisible)}
-        >
-          <OmxIcon
-            idleIcon={Pen24Regular}
-            hoverIcon={Pen24Filled}
-            activeIcon={Pen24Filled}
-            activeHoverIcon={Pen24Regular}
-            {...penIcon.iconProps}
-          />
-        </S.OptionButton>
-        <S.OptionButton
-          {...trashIcon.buttonProps}
-          $pressAndHoldTimeoutInMilliseconds={1000}
-          onMouseDown={(ev) => {
-            clearTimeout(deleteTimeout.current);
-            deleteTimeout.current = setTimeout(() => {
-              onDeleteRef.current?.(event);
-            }, DELETE_IN_MILLISECONDS);
+    <>
+      <S.Wrapper $disabled={isLoading}>
+        <S.CardWrapper>
+          <S.Header>
+            <span>{event.title}</span>
+            <S.DateGroupWrapper>
+              <S.DateWrapper>
+                {Object.entries(dates).map(([key, value]) => (
+                  <React.Fragment key={key}>
+                    <Tag
+                      $bgColor={value.tag.bgColor}
+                      $textColor={value.tag.color}
+                    >
+                      {value.tag.name}
+                    </Tag>
+                    <span>{value.formattedDate}</span>
+                  </React.Fragment>
+                ))}
+              </S.DateWrapper>
+            </S.DateGroupWrapper>
+          </S.Header>
+          <S.Body>
+            <Tag $bgColor={colors.white}>Descrição:</Tag>
+            <S.Description>{event.description}</S.Description>
+          </S.Body>
+        </S.CardWrapper>
+        {canUpdate && (
+          <S.OptionsWrapper className="options-wrapper">
+            <S.OptionButton
+              {...penIcon.buttonProps}
+              onClick={() => setIsEditEventFormVisible(!isEditEventFormVisible)}
+            >
+              <OmxIcon
+                idleIcon={Pen24Regular}
+                hoverIcon={Pen24Filled}
+                activeIcon={Pen24Filled}
+                activeHoverIcon={Pen24Regular}
+                {...penIcon.iconProps}
+              />
+            </S.OptionButton>
+            <S.OptionButton
+              {...trashIcon.buttonProps}
+              $pressAndHoldTimeoutInMilliseconds={1000}
+              onMouseDown={(ev) => {
+                clearTimeout(deleteTimeout.current);
+                deleteTimeout.current = setTimeout(() => {
+                  onDeleteRef.current?.(event);
+                }, DELETE_IN_MILLISECONDS);
 
-            trashIcon.buttonProps.onMouseDown?.(ev);
-          }}
-          onMouseUp={(ev) => {
-            clearTimeout(deleteTimeout.current);
-            trashIcon.buttonProps.onMouseUp?.(ev);
-          }}
-          onMouseLeave={(ev) => {
-            clearTimeout(deleteTimeout.current);
-            trashIcon.buttonProps.onMouseLeave?.(ev);
-          }}
-        >
-          <OmxIcon
-            idleIcon={Delete24Regular}
-            hoverIcon={Delete24Filled}
-            activeIcon={Delete24Filled}
-            activeHoverIcon={Delete24Regular}
-            colorPressed={colors.red}
-            {...trashIcon.iconProps}
-          />
-        </S.OptionButton>
-      </S.OptionsWrapper>
+                trashIcon.buttonProps.onMouseDown?.(ev);
+              }}
+              onMouseUp={(ev) => {
+                clearTimeout(deleteTimeout.current);
+                trashIcon.buttonProps.onMouseUp?.(ev);
+              }}
+              onMouseLeave={(ev) => {
+                clearTimeout(deleteTimeout.current);
+                trashIcon.buttonProps.onMouseLeave?.(ev);
+              }}
+            >
+              <OmxIcon
+                idleIcon={Delete24Regular}
+                hoverIcon={Delete24Filled}
+                activeIcon={Delete24Filled}
+                activeHoverIcon={Delete24Regular}
+                colorPressed={colors.red}
+                {...trashIcon.iconProps}
+              />
+            </S.OptionButton>
+          </S.OptionsWrapper>
+        )}
+      </S.Wrapper>
       {isEditEventFormVisible && (
         <S.EventFormFloatingWrapper>
           <OmxEventForm
             event={event}
-            onConfirm={() => {
-              setIsEditEventFormVisible(false);
+            isLoading={isLoading}
+            onConfirm={(data) => {
+              dispatch(
+                doUpdateEvent({
+                  id: event.id,
+                  eventData: {
+                    title: data.name,
+                    description: data.description,
+                    startDate: data.start,
+                    finishDate: data.finish,
+                  },
+                  callback(err) {
+                    if (err)
+                      return notify({
+                        id: `omxEventFormApiError-${event.id}`,
+                        title: "Api error",
+                        body: err?.message ?? "api error",
+                        status: ToastStatus.error,
+                      });
+                    setIsEditEventFormVisible(false);
+                    return notify({
+                      id: `omxEventFormApiSuccess-${event.id}`,
+                      title: "Event",
+                      body: "event updated successfully",
+                      status: ToastStatus.success,
+                    });
+                  },
+                }) as any
+              );
             }}
             onCancel={() => setIsEditEventFormVisible(false)}
           />
         </S.EventFormFloatingWrapper>
       )}
-    </S.Wrapper>
+    </>
   );
 };

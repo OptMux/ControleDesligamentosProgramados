@@ -1,7 +1,11 @@
-import { styled } from "styled-components";
+import { css, styled } from "styled-components";
 import { colors } from "../../enums/colors";
 
-export const WrapperForm = styled.form`
+interface WrapperFormProps {
+  $isLoading?: boolean;
+}
+
+export const WrapperForm = styled.form<WrapperFormProps>`
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -13,6 +17,16 @@ export const WrapperForm = styled.form`
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: ${colors.fg};
   box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.25);
+
+  transition: filter 0.3s ease;
+
+  ${({ $isLoading }) =>
+    $isLoading
+      ? css`
+          filter: brightness(0.6);
+          pointer-events: none;
+        `
+      : ""}
 `;
 
 export const InputWrapper = styled.div`

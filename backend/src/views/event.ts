@@ -1,4 +1,4 @@
-import { Router, json } from "express";
+import { Router } from "express";
 import { prisma } from "../db";
 import { HttpStatus } from "../enums/requests";
 import { parseBoolean } from "../utils/parseBoolean";
@@ -16,8 +16,27 @@ eventRouter.get("/", async (req, res) => {
   const idPageCursor = (req.query.idPageCursor as any) || null;
   const rawPageCursor = (req.query.datePageCursor as any) || null;
   const pageCursor = rawPageCursor ? new Date(rawPageCursor) : null;
+  const search = (req.query.search as string) || null;
 
   const filterByActive = parseBoolean(onlyActive as any);
+
+  let where: any = {};
+  if (search)
+    where = {
+      ...where,
+      title: {
+        contains: search,
+      },
+    };
+
+  if (filterByActive)
+    where = {
+      ...where,
+      finishedAt: {
+        equals: null,
+      },
+    };
+
   const events = await prisma.systemEvent.findMany({
     orderBy: {
       startDate: "desc",
@@ -31,15 +50,7 @@ eventRouter.get("/", async (req, res) => {
           },
         }
       : null),
-    ...(filterByActive
-      ? {
-          where: {
-            finishedAt: {
-              equals: null,
-            },
-          },
-        }
-      : null),
+    where,
   });
 
   const lastEvent = events[limit];
@@ -136,6 +147,7 @@ eventRouter.put("/:eventId", onlyAdmin, async (req, res) => {
       startDate: startDate ? new Date(startDate) : undefined,
       finishDate: finishDate ? new Date(finishDate) : undefined,
     });
+
     res.status(HttpStatus.OK).json({
       message: "event updated successfully",
       data: {

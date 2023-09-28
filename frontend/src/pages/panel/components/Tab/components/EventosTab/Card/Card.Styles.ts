@@ -1,7 +1,11 @@
 import { css, styled } from "styled-components";
 import { colors } from "../../../../../../../enums/colors";
 
-export const Wrapper = styled.div`
+interface WrapperProps {
+  $disabled?: boolean;
+}
+
+export const Wrapper = styled.div<WrapperProps>`
   display: flex;
   width: 100%;
   column-gap: 8px;
@@ -11,6 +15,16 @@ export const Wrapper = styled.div`
       display: none;
     }
   }
+
+  transition: filter 0.3s ease;
+
+  ${({ $disabled }) =>
+    $disabled
+      ? css`
+          filter: brightness(0.6);
+          pointer-events: none;
+        `
+      : ""}
 `;
 
 export const CardWrapper = styled.div`

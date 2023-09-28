@@ -15,6 +15,7 @@ interface OmxInputProps {
   value?: string;
   onInput?: (value: string) => void;
   type?: React.HTMLInputTypeAttribute;
+  disabled?: boolean;
 }
 
 export const OmxInput: React.FC<OmxInputProps> = ({
@@ -23,6 +24,7 @@ export const OmxInput: React.FC<OmxInputProps> = ({
   value,
   type = "text",
   onInput,
+  disabled = false,
 }) => {
   const [passwordIsVisible, setPasswordIsVisible] = useState(false);
   const { iconProps, buttonProps } = useIcons();
@@ -52,6 +54,7 @@ export const OmxInput: React.FC<OmxInputProps> = ({
         autoComplete="off"
         spellCheck={false}
         type={currentType}
+        disabled={disabled}
       />
 
       {isPassword && (value?.length ?? 0) > 0 ? (

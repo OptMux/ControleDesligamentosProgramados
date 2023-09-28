@@ -1,27 +1,41 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { OmxAccordionItem } from "../../../../../../components/OmxAccordionItem/OmxAccordionItem";
-import { useAccordion } from "../../../../../../hooks/useAccordion";
-import { useTypedSelector } from "../../../../../../hooks/useTypedSelector";
-import * as PS from "../../Tab.Styles";
-import * as S from "./EventosTab.Styles";
-import { Month } from "../../../../../../enums/months";
-import { getMonth } from "../../../../../../utils/getMonth";
-import { SystemEvent } from "../../../../../../store/ducks/events/events.types";
-import { Card } from "./Card/Card";
-import { OmxSearchBox } from "../../../../../../components/OmxSearchBox/OmxSearchBox";
 import { OmxEventForm } from "../../../../../../components/OmxEventForm/OmxEventForm";
+import { OmxSearchBox } from "../../../../../../components/OmxSearchBox/OmxSearchBox";
+import { Month } from "../../../../../../enums/months";
+import { useAccordion } from "../../../../../../hooks/useAccordion";
+import { useToast } from "../../../../../../hooks/useToast";
+import { ToastStatus } from "../../../../../../hooks/useToastPrivate";
+import { useTypedSelector } from "../../../../../../hooks/useTypedSelector";
+import { SystemEvent } from "../../../../../../store/ducks/events/events.types";
+import {
+  doDeleteEvent,
+  doGetEvents,
+} from "../../../../../../store/ducks/events/eventsThunks";
+import { getMonth } from "../../../../../../utils/getMonth";
+import * as PS from "../../Tab.Styles";
+import { Card } from "./Card/Card";
+import * as S from "./EventosTab.Styles";
 
 type MonthId = `${Month}-${number}`;
 type MonthObject = { id: MonthId; name: Month; events: SystemEvent[] };
 
 export const EventosTab: React.FC = function () {
+  const dispatch = useDispatch();
   const { events } = useTypedSelector(({ events }) => ({ events }));
   const { accordionItems, setIsOpen } = useAccordion();
+  const notify = useToast();
 
   const [isSearchBoxVisible, setIsSearchBoxVisible] = useState(false);
   const [isEventFormVisible, setIsEventFormVisible] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [valueToSearch, setValueToSearch] = useState(searchValue);
+
+  useEffect(() => {
+    dispatch(doGetEvents({ ignoreState: true }) as any);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const eventsSeparatedByMonth = useMemo(() => {
     const months = new Map<MonthId, MonthObject>();
@@ -115,8 +129,28 @@ export const EventosTab: React.FC = function () {
               <Card
                 key={event.id}
                 event={event}
+                isLoading={events.eventsInLoading[event.id]}
                 onDelete={(currentEvent) => {
-                  alert(`Deleting ${currentEvent.title}`);
+                  dispatch(
+                    doDeleteEvent({
+                      id: currentEvent.id,
+                      callback(err) {
+                        if (err)
+                          return notify({
+                            id: `omxEventFormDeleteApiError-${event.id}`,
+                            title: "Api error",
+                            body: err?.message ?? "api error",
+                            status: ToastStatus.error,
+                          });
+                        notify({
+                          id: `omxEventFormDeleteApiSuccess-${event.id}`,
+                          title: "Event",
+                          body: "event deleted successfully",
+                          status: ToastStatus.success,
+                        });
+                      },
+                    }) as any
+                  );
                 }}
               />
             ))}

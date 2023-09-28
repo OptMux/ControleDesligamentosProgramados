@@ -13,7 +13,7 @@ export async function updateEvent(
       finishedAt: (data as any)?.finishedAt,
     },
     "should not be updated manually",
-    (_, value) => Boolean(value)
+    (_, value) => !Boolean(value)
   );
 
   const eventToUpdate = await prisma.systemEvent.findFirst({

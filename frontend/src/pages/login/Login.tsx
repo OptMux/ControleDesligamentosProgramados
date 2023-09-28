@@ -1,14 +1,13 @@
 import * as S from "./Login.Styles";
 import LogoImg from "../../assets/img/logo.svg";
 import { OmxInput } from "../../components/OmxInput/OmxInput";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { OmxMainButton } from "../../components/OmxMainButton/OmxMainButton";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
-import { useNavigate } from "react-router-dom";
 import { ToastStatus } from "../../hooks/useToastPrivate";
 import { useToast } from "../../hooks/useToast";
 import { useDispatch } from "react-redux";
-import { doLogin, recoverSession } from "../../store/ducks/user/userThunks";
+import { doLogin } from "../../store/ducks/user/userThunks";
 import { OmxHead } from "../../components/OmxHead/OmxHead";
 
 const CURRENT_YEAR: number = new Date()?.getFullYear?.();
@@ -21,7 +20,6 @@ export const LoginPage: React.FC = function () {
 
   const notify = useToast();
 
-  const navigate = useNavigate();
   const { user } = useTypedSelector(({ user }) => ({
     user,
   }));
@@ -36,8 +34,7 @@ export const LoginPage: React.FC = function () {
       });
       return;
     }
-    setUsername("");
-    setPassword("");
+
     dispatch(
       doLogin({
         username,
@@ -53,12 +50,7 @@ export const LoginPage: React.FC = function () {
         },
       }) as any
     );
-  }, [username, password, setUsername, setPassword, notify, dispatch]);
-
-  useEffect(() => {
-    if (user.loggedUser !== null) navigate("/panel");
-    else dispatch(recoverSession({}) as any);
-  }, [user.loggedUser, navigate, dispatch]);
+  }, [username, password, notify, dispatch]);
 
   return (
     <>
@@ -74,12 +66,14 @@ export const LoginPage: React.FC = function () {
           <S.LoginWrapper>
             <OmxInput
               placeholder="Username"
+              disabled={user.isLoading}
               value={username}
               onInput={setUsername}
               fullWidth
             />
             <OmxInput
               placeholder="Password"
+              disabled={user.isLoading}
               value={password}
               onInput={setPassword}
               type="password"

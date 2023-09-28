@@ -1,19 +1,18 @@
-import { useContext } from "react";
 import * as S from "./Tab.Styles";
-import { TabContext } from "../../Panel";
 import { TabName } from "../../../../enums/tabs";
 import { EventosTab } from "./components/EventosTab/EventosTab";
 import { LogsTab } from "./components/LogsTab/LogsTab";
 
-export const Tab: React.FC = function () {
-  const { currentTab } = useContext(TabContext);
+interface TabProps {
+  currentTab?: TabName;
+}
+
+export const Tab: React.FC<TabProps> = function ({ currentTab }) {
   return (
     <S.Wrapper>
       <S.TabWrapper>
-        {{
-          [TabName.eventos]: () => <EventosTab />,
-          [TabName.logs]: () => <LogsTab />,
-        }[currentTab]?.()}
+        {currentTab === TabName.eventos && <EventosTab />}
+        {currentTab === TabName.logs && <LogsTab />}
       </S.TabWrapper>
     </S.Wrapper>
   );
