@@ -11,13 +11,26 @@ import { deleteEvent } from "../procedures/deleteEvent";
 export const eventRouter = Router();
 
 eventRouter.get("/", async (req, res) => {
-  const { limit, onlyActive = "false" } = req.query;
+  const { onlyActive = "false" } = req.query;
+  const limit = parseInt((req.query.limit as any) || 100);
+  const idPageCursor = (req.query.idPageCursor as any) || null;
+  const rawPageCursor = (req.query.datePageCursor as any) || null;
+  const pageCursor = rawPageCursor ? new Date(rawPageCursor) : null;
+
   const filterByActive = parseBoolean(onlyActive as any);
   const events = await prisma.systemEvent.findMany({
     orderBy: {
       startDate: "desc",
     },
-    take: parseInt((limit as any) || 30),
+    take: limit + 1,
+    ...(pageCursor && idPageCursor
+      ? {
+          cursor: {
+            id: idPageCursor,
+            startDate: pageCursor,
+          },
+        }
+      : null),
     ...(filterByActive
       ? {
           where: {
@@ -29,10 +42,25 @@ eventRouter.get("/", async (req, res) => {
       : null),
   });
 
+  const lastEvent = events[limit];
+
   res.status(HttpStatus.OK).json({
     data: {
-      events,
+      events: events.slice(0, limit),
     },
+    ...(lastEvent
+      ? {
+          nextPage: [
+            "/event",
+            new URLSearchParams({
+              limit: limit as any as string,
+              onlyActive: onlyActive as string,
+              idPageCursor: lastEvent.id,
+              datePageCursor: lastEvent.startDate.toISOString(),
+            }).toString(),
+          ].join("?"),
+        }
+      : null),
   });
 });
 
