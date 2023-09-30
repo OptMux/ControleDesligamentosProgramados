@@ -17,6 +17,7 @@ import { useDispatch } from "react-redux";
 import { doUpdateEvent } from "../../../../../../../store/ducks/events/eventsThunks";
 import { useToast } from "../../../../../../../hooks/useToast";
 import { ToastStatus } from "../../../../../../../hooks/useToastPrivate";
+import { useTypedSelector } from "../../../../../../../hooks/useTypedSelector";
 
 const DATE_FORMAT = "DD/MM/YY às HH:mm";
 
@@ -46,6 +47,7 @@ export const Card: React.FC<CardProps> = function ({
 }) {
   const dispatch = useDispatch();
   const [isEditEventFormVisible, setIsEditEventFormVisible] = useState(false);
+  const { user } = useTypedSelector(({ user }) => ({ user }));
   const penIcon = useIcons();
   const trashIcon = useIcons();
   const notify = useToast();
@@ -57,8 +59,8 @@ export const Card: React.FC<CardProps> = function ({
   onDeleteRef.current = onDelete;
 
   const canUpdate = useMemo(() => {
-    return !(event.startedAt && !event.finishedAt);
-  }, [event]);
+    return !(event.startedAt && !event.finishedAt) && user.loggedUser?.isAdmin;
+  }, [event, user.loggedUser?.isAdmin]);
 
   const dates: {
     start: DateData;
@@ -191,16 +193,11 @@ export const Card: React.FC<CardProps> = function ({
           <OmxEventForm
             event={event}
             isLoading={isLoading}
-            onConfirm={(data) => {
+            onConfirm={({ eventData }) => {
               dispatch(
                 doUpdateEvent({
                   id: event.id,
-                  eventData: {
-                    title: data.name,
-                    description: data.description,
-                    startDate: data.start,
-                    finishDate: data.finish,
-                  },
+                  eventData,
                   callback(err) {
                     if (err)
                       return notify({

@@ -1,7 +1,12 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { EventsSliceState, SystemEvent } from "./events.types";
 import { idFactory } from "../../../utils/generators";
-import { doDeleteEvent, doGetEvents, doUpdateEvent } from "./eventsThunks";
+import {
+  doCreateEvent,
+  doDeleteEvent,
+  doGetEvents,
+  doUpdateEvent,
+} from "./eventsThunks";
 
 const ids = idFactory();
 
@@ -31,7 +36,9 @@ export const eventsSlice = createSlice({
     builder.addCase(doGetEvents.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isLoadingPages = false;
-      state.events = action.payload.events ?? [];
+      if (state.pageParams && !action.meta.arg.ignoreState)
+        state.events.push(...(action.payload.events ?? []));
+      else state.events = action.payload.events ?? [];
       state.pageParams = action.payload.params;
     });
 
@@ -40,6 +47,19 @@ export const eventsSlice = createSlice({
       state.isLoadingPages = false;
       state.events = [];
       state.pageParams = undefined;
+    });
+
+    builder.addCase(doCreateEvent.pending, (state) => {
+      state.isLoading = true;
+    });
+
+    builder.addCase(doCreateEvent.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.events.push(action.payload);
+    });
+
+    builder.addCase(doCreateEvent.rejected, (state) => {
+      state.isLoading = false;
     });
 
     builder.addCase(doUpdateEvent.pending, (state, action) => {

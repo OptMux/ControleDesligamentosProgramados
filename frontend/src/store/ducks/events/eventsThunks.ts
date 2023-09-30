@@ -1,6 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { SystemEvent } from "./events.types";
-import { deleteEvent, getEvents, updateEvent } from "../../../services/event";
+import {
+  createEvent,
+  deleteEvent,
+  getEvents,
+  updateEvent,
+} from "../../../services/event";
 import { RootState } from "../../store";
 
 export interface DoGetEventsReturn {
@@ -9,6 +14,7 @@ export interface DoGetEventsReturn {
 }
 
 interface DoGetEventsPayload {
+  search?: string;
   ignoreState?: boolean;
   callback?: (err: Error | null, data: DoGetEventsReturn | null) => void;
 }
@@ -16,18 +22,21 @@ interface DoGetEventsPayload {
 export const doGetEvents = createAsyncThunk<
   DoGetEventsReturn,
   DoGetEventsPayload
->("event/getEvents", async ({ ignoreState, callback }, { getState }) => {
-  const { events } = getState() as RootState;
-  const params = ignoreState ? undefined : events?.pageParams;
-  try {
-    const data = await getEvents(undefined, undefined, params);
-    callback?.(null, data);
-    return data;
-  } catch (err: any) {
-    callback?.(err, null);
-    throw err;
+>(
+  "event/getEvents",
+  async ({ search, ignoreState, callback }, { getState }) => {
+    const { events } = getState() as RootState;
+    const params = ignoreState ? undefined : events?.pageParams;
+    try {
+      const data = await getEvents(undefined, undefined, search, params);
+      callback?.(null, data);
+      return data;
+    } catch (err: any) {
+      callback?.(err, null);
+      throw err;
+    }
   }
-});
+);
 
 interface DoUpdateEventPayload {
   id: SystemEvent["id"];
@@ -64,6 +73,28 @@ export const doDeleteEvent = createAsyncThunk<
     return id;
   } catch (err: any) {
     callback?.(err);
+    throw err;
+  }
+});
+
+interface DoCreateEventPayload {
+  eventData: Pick<
+    SystemEvent,
+    "title" | "description" | "startDate" | "finishDate"
+  >;
+  callback?: (err: Error | null, data: SystemEvent | null) => void;
+}
+
+export const doCreateEvent = createAsyncThunk<
+  SystemEvent,
+  DoCreateEventPayload
+>("event/createEvent", async ({ eventData, callback }) => {
+  try {
+    const data = await createEvent(eventData);
+    callback?.(null, data);
+    return data;
+  } catch (err: any) {
+    callback?.(err, null);
     throw err;
   }
 });

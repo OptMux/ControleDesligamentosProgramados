@@ -11,10 +11,10 @@ import { SystemEvent } from "../../store/ducks/events/events.types";
 
 interface DataProps {
   event?: SystemEvent;
-  name: string;
-  description: string;
-  start: Date;
-  finish: Date;
+  eventData: Pick<
+    SystemEvent,
+    "title" | "description" | "startDate" | "finishDate"
+  >;
 }
 
 interface OmxSearchBoxProps {
@@ -77,10 +77,9 @@ const getDatePickerInputs = (formCreator: ReturnType<typeof useDateForm>) => {
       placeholder={unit.placeholder}
       max={unit.max}
       min={unit.min}
-      dir="rtl"
-      $paddingLeft={0}
-      $paddingRight={5}
-      value={unit.value as any}
+      $paddingLeft={5}
+      $paddingRight={0}
+      value={(unit.value as any) ?? ""}
       onChange={(ev) => {
         const value = parseInt(ev?.target?.value);
         unit.dispatch((isNaN(value) ? null : value) as number);
@@ -96,8 +95,22 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
   onConfirm,
   onCancel,
 }) {
-  const startDate = useDateForm(event ? getDateInfo(event.startDate) : {});
-  const finishDate = useDateForm(event ? getDateInfo(event.finishDate) : {});
+  const startDate = useDateForm(
+    event
+      ? getDateInfo(event.startDate)
+      : {
+          hour: 8,
+          minute: 0,
+        }
+  );
+  const finishDate = useDateForm(
+    event
+      ? getDateInfo(event.finishDate)
+      : {
+          hour: 20,
+          minute: 0,
+        }
+  );
   const notify = useToast();
 
   const [descriptionValue, setDescriptionValue] = useState(
@@ -167,34 +180,39 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
         const data = new FormData(form);
         const resultData: DataProps = {
           event,
-          name: data.get("name") as string,
-          description: data.get("description") as string,
-          start: startDate.resultDate,
-          finish: finishDate.resultDate,
+          eventData: {
+            title: data.get("title") as string,
+            description: data.get("description") as string,
+            startDate: startDate.resultDate,
+            finishDate: finishDate.resultDate,
+          },
         };
 
         if (
-          !resultData.name?.trim?.() ||
-          !resultData?.description?.trim?.() ||
-          !startDate.valid ||
-          !finishDate.valid
+          [
+            resultData.eventData.title,
+            resultData.eventData.description,
+            startDate.valid,
+            finishDate.valid,
+          ].every(Boolean)
         )
-          return notify({
-            id: "omxEventFormValidationError",
-            title: "Erro de validação",
-            body: "Preencha todos os campos",
-            status: ToastStatus.error,
-          });
-        onConfirm?.(resultData);
+          return onConfirm?.(resultData);
+
+        return notify({
+          id: "omxEventFormValidationError",
+          title: "Erro de validação",
+          body: "Preencha todos os campos",
+          status: ToastStatus.error,
+        });
       }}
     >
       <S.InputWrapper>
         <S.Input
           ref={inputRef}
-          name="name"
+          name="title"
           type="text"
           autoComplete="off"
-          defaultValue={event?.title}
+          defaultValue={event?.title ?? ""}
           placeholder="Nome do evento"
         />
       </S.InputWrapper>
@@ -204,7 +222,7 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
           type="text"
           placeholder="Descrição"
           maxLength={DESCRIPTION_CHAR_LIMIT}
-          value={descriptionValue}
+          value={descriptionValue ?? ""}
           onChange={(ev) => setDescriptionValue(ev?.target?.value)}
           autoComplete="off"
         />

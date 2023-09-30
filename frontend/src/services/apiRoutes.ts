@@ -5,4 +5,5 @@ export const ApiRoutes = Object.freeze({
   changePassword: "/auth/changePassword",
   getEvents: "/event",
   updateEvent: "/event",
+  createEvent: "/event",
 });

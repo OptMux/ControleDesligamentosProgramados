@@ -39,7 +39,7 @@ eventRouter.get("/", async (req, res) => {
 
   const events = await prisma.systemEvent.findMany({
     orderBy: {
-      startDate: "desc",
+      startDate: "asc",
     },
     take: limit + 1,
     ...(pageCursor && idPageCursor

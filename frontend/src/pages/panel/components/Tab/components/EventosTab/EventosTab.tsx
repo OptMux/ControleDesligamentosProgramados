@@ -10,6 +10,7 @@ import { ToastStatus } from "../../../../../../hooks/useToastPrivate";
 import { useTypedSelector } from "../../../../../../hooks/useTypedSelector";
 import { SystemEvent } from "../../../../../../store/ducks/events/events.types";
 import {
+  doCreateEvent,
   doDeleteEvent,
   doGetEvents,
 } from "../../../../../../store/ducks/events/eventsThunks";
@@ -17,6 +18,7 @@ import { getMonth } from "../../../../../../utils/getMonth";
 import * as PS from "../../Tab.Styles";
 import { Card } from "./Card/Card";
 import * as S from "./EventosTab.Styles";
+import { getMonthValue } from "../../../../../../utils/getMonthValue";
 
 type MonthId = `${Month}-${number}`;
 type MonthObject = { id: MonthId; name: Month; events: SystemEvent[] };
@@ -33,21 +35,12 @@ export const EventosTab: React.FC = function () {
   const [valueToSearch, setValueToSearch] = useState(searchValue);
 
   useEffect(() => {
-    dispatch(doGetEvents({ ignoreState: true }) as any);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    dispatch(doGetEvents({ search: valueToSearch, ignoreState: true }) as any);
+  }, [valueToSearch, dispatch]);
 
   const eventsSeparatedByMonth = useMemo(() => {
     const months = new Map<MonthId, MonthObject>();
-    const lowerValueToSearch = valueToSearch
-      ?.toLowerCase?.()
-      ?.trim?.()
-      ?.split?.(" ");
-
     events.events.forEach((event) => {
-      const formattedTitle = event.title?.toLowerCase?.()?.trim?.();
-      if (!lowerValueToSearch.every((value) => formattedTitle.includes(value)))
-        return;
       const month = getMonth(event.startDate);
       const year = new Date(event.startDate).getFullYear();
 
@@ -60,8 +53,10 @@ export const EventosTab: React.FC = function () {
       monthObject.events.push(event);
       months.set(monthId, monthObject);
     });
-    return Array.from(months.values());
-  }, [events.events, valueToSearch]);
+    return Array.from(months.values()).sort((monthObjA, monthObjB) => {
+      return getMonthValue(monthObjA.name) - getMonthValue(monthObjB.name);
+    });
+  }, [events.events]);
 
   return (
     <>
@@ -108,8 +103,29 @@ export const EventosTab: React.FC = function () {
           {isEventFormVisible && (
             <S.EventFormFloatingWrapper>
               <OmxEventForm
-                onConfirm={() => {
+                onConfirm={({ eventData }) => {
                   setIsEventFormVisible(false);
+
+                  dispatch(
+                    doCreateEvent({
+                      eventData,
+                      callback(err) {
+                        if (err)
+                          return notify({
+                            id: `omxEventFormCreateApiError`,
+                            title: "Api error",
+                            body: err?.message ?? "api error",
+                            status: ToastStatus.error,
+                          });
+                        notify({
+                          id: `omxEventFormCreateApiSuccess`,
+                          title: "Event",
+                          body: "event created successfully",
+                          status: ToastStatus.success,
+                        });
+                      },
+                    }) as any
+                  );
                 }}
                 onCancel={() => setIsEventFormVisible(false)}
               />
@@ -156,6 +172,16 @@ export const EventosTab: React.FC = function () {
             ))}
           </OmxAccordionItem>
         ))}
+        {events.pageParams && (
+          <S.ShowMoreButton
+            $disabled={events.isLoading}
+            onClick={() => {
+              dispatch(doGetEvents({}) as any);
+            }}
+          >
+            Mostrar Mais
+          </S.ShowMoreButton>
+        )}
       </S.Wrapper>
     </>
   );

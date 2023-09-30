@@ -31,6 +31,22 @@ export async function getEvents(
   }
 }
 
+export async function createEvent(
+  eventData: Pick<
+    SystemEvent,
+    "title" | "description" | "startDate" | "finishDate"
+  >
+): Promise<SystemEvent> {
+  try {
+    const {
+      data: { data },
+    } = await withAuth.post(ApiRoutes.createEvent, eventData);
+    return data?.event;
+  } catch (err: any) {
+    throw new Error(err?.response?.data?.message ?? "create event error");
+  }
+}
+
 export async function updateEvent(
   id: SystemEvent["id"],
   eventData: Partial<Omit<SystemEvent, "id" | "startedAt" | "finishedAt">>
