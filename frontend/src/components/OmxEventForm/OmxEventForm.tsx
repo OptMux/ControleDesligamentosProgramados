@@ -99,7 +99,7 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
     event
       ? getDateInfo(event.startDate)
       : {
-          hour: 8,
+          hour: 10,
           minute: 0,
         }
   );
@@ -107,7 +107,7 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
     event
       ? getDateInfo(event.finishDate)
       : {
-          hour: 20,
+          hour: 14,
           minute: 0,
         }
   );

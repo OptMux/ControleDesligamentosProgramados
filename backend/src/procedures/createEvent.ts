@@ -16,6 +16,9 @@ export async function createEvent(
   if (startDate >= finishDate)
     throw new Error("finishDate must be greater than startDate");
 
+  if (startDate.getTime() <= Date.now())
+    throw new Error("startDate must be greater than current date");
+
   const event = await prisma.systemEvent.create({
     data: {
       title,
