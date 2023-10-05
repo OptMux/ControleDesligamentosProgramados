@@ -8,4 +8,5 @@ export const settings = {
   defaultUsername: process.env?.DEFAULT_USERNAME ?? "admin",
   defaultPassword: process.env?.DEFAULT_PASSWORD ?? "admin",
   debugMode: process.env.DEBUG_MODE === "true",
+  purgeLimitByMonths: parseInt(process.env.PURGE_LIMIT_BY_MONTHS ?? "1"),
 };

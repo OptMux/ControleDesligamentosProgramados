@@ -9,7 +9,7 @@ import { prisma } from "../db";
 
 export const userRouter = Router();
 
-userRouter.get("/", withAuth, async (req, res) => {
+userRouter.get("/", async (req, res) => {
   const { id } = (req as AuthRequest)?.userInfo ?? {};
   const user = await prisma.user.findFirst({
     select: {
@@ -31,7 +31,7 @@ userRouter.get("/", withAuth, async (req, res) => {
   });
 });
 
-userRouter.post("/", withAuth, onlyAdmin, async (req, res) => {
+userRouter.post("/", onlyAdmin, async (req, res) => {
   const {
     username = "",
     password = "",
@@ -51,7 +51,7 @@ userRouter.post("/", withAuth, onlyAdmin, async (req, res) => {
   });
 });
 
-userRouter.delete("/:userId", withAuth, onlyAdmin, async (req, res) => {
+userRouter.delete("/:userId", onlyAdmin, async (req, res) => {
   const { userId } = req.params;
   const { id } = (req as AuthRequest)?.userInfo ?? {};
 

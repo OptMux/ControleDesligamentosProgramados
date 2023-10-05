@@ -66,6 +66,7 @@ eventRouter.get("/", async (req, res) => {
             onlyActive: onlyActive as string,
             idPageCursor: lastEvent.id,
             datePageCursor: lastEvent.startDate.toISOString(),
+            search: search as string,
           }).toString(),
         }
       : null),

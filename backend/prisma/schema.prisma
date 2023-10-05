@@ -30,5 +30,6 @@ model SystemEvent {
 model SystemLog {
   id        String   @id @default(uuid())
   message   String
+  source    String
   createdAt DateTime @default(now())
 }

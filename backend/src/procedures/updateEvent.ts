@@ -34,6 +34,9 @@ export async function updateEvent(
   )
     throw new Error("finishDate must be greater than startDate");
 
+  if ((data.startDate?.getTime?.() ?? 0) <= Date.now())
+    throw new Error("startDate must be greater than current date");
+
   const filteredData = filterData(data, [
     "title",
     "description",
