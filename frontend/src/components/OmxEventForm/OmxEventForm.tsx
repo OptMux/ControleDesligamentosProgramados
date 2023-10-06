@@ -73,6 +73,7 @@ const getDatePickerInputs = (formCreator: ReturnType<typeof useDateForm>) => {
 
   const elements = dateUnits.map((unit) => (
     <S.Input
+      key={unit.placeholder}
       type="number"
       placeholder={unit.placeholder}
       max={unit.max}

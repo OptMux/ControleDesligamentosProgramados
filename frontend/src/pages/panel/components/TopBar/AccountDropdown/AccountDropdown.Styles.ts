@@ -8,7 +8,7 @@ export const Wrapper = styled.div`
 `;
 
 interface ContainerProps {
-  meta: string;
+  $meta: string;
 }
 
 export const Container = styled.div<ContainerProps>`
@@ -25,10 +25,10 @@ export const Container = styled.div<ContainerProps>`
   padding: 6px;
   cursor: pointer;
 
-  ${({ meta }) =>
-    meta
+  ${({ $meta }) =>
+    $meta
       ? css`
-          &:not(:hover) .${meta} {
+          &:not(:hover) .${$meta} {
             display: none;
           }
         `

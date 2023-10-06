@@ -19,6 +19,7 @@ import * as PS from "../../Tab.Styles";
 import { Card } from "./Card/Card";
 import * as S from "./EventosTab.Styles";
 import { getMonthValue } from "../../../../../../utils/getMonthValue";
+import { ArrowSync24Regular } from "@fluentui/react-icons";
 
 type MonthObject = { id: Month; name: Month; events: SystemEvent[] };
 type YearObject = { id: number; months: Map<Month, MonthObject> };
@@ -100,6 +101,16 @@ export const EventosTab: React.FC = function () {
             : ""}
         </PS.TabTitle>
         <S.HeaderButtonsWrapper>
+          <S.Button
+            onClick={() => {
+              if (valueToSearch) {
+                setSearchValue("");
+                setValueToSearch("");
+              } else dispatch(doGetEvents({ ignoreState: true }) as any);
+            }}
+          >
+            <ArrowSync24Regular />
+          </S.Button>
           <S.Button
             onClick={() => {
               setSearchValue("");

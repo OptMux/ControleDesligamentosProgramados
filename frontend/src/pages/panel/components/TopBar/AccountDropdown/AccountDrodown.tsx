@@ -17,7 +17,7 @@ export const AccountDropdown: React.FC = function () {
 
   return (
     <S.Wrapper>
-      <S.Container meta="omx-dropdown">
+      <S.Container $meta="omx-dropdown">
         <S.UserAvatar src={UserAvatarImg} draggable={false} />
         <S.UserName>{user.loggedUser?.username}</S.UserName>
         <S.ChevronIconWrapper>

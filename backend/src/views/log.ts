@@ -9,10 +9,11 @@ logRouter.get("/", async (req, res) => {
   const idPageCursor = (req.query.idPageCursor as any) || null;
   const rawPageCursor = (req.query.datePageCursor as any) || null;
   const pageCursor = rawPageCursor ? new Date(rawPageCursor) : null;
+  const order = (req.query.order || "desc") as "asc" | "desc";
 
   const logs = await prisma.systemLog.findMany({
     orderBy: {
-      createdAt: "desc",
+      createdAt: order,
     },
     take: limit + 1,
     ...(pageCursor && idPageCursor
@@ -37,6 +38,7 @@ logRouter.get("/", async (req, res) => {
             limit: limit as any as string,
             idPageCursor: lastLog.id,
             datePageCursor: lastLog.createdAt.toISOString(),
+            order,
           }).toString(),
         }
       : null),

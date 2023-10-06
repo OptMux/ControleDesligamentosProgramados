@@ -4,6 +4,7 @@ export const ApiRoutes = Object.freeze({
   register: "/user",
   changePassword: "/auth/changePassword",
   getEvents: "/event",
+  getLogs: "/log",
   updateEvent: "/event",
   createEvent: "/event",
 });
