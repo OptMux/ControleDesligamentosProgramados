@@ -33,3 +33,9 @@ model SystemLog {
   source    String
   createdAt DateTime @default(now())
 }
+
+model SystemEventException {
+  id          String   @id @default(uuid())
+  description String
+  date        DateTime
+}

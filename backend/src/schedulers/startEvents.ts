@@ -1,5 +1,6 @@
 import { prisma } from "../db";
 import { startEvent } from "../procedures/startEvent";
+import { canStartEvents } from "../utils/canStartEvents";
 import { Debug } from "../utils/debug";
 import { Scheduler } from "./Scheduler";
 
@@ -13,6 +14,11 @@ export const StartEventsScheduler = new Scheduler(async () => {
       startedAt: null,
     },
   });
+
+  const canStart = await canStartEvents();
+
+  if (!canStart) return;
+
   if (events.length > 0)
     Debug.log("Found events to start. Trying to start them...");
 
