@@ -1,4 +1,4 @@
-import { pbkdf2 } from "node:crypto";
+import { pbkdf2 } from "crypto";
 import { settings } from "../settings";
 
 export function encryptPassword(password: string): Promise<string> {

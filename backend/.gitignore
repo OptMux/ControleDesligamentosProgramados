@@ -21,3 +21,5 @@ experimental/**/*.db
 .vscode/
 .nuxt
 dev.db
+generated/
+prisma/client/

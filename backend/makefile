@@ -6,8 +6,3 @@ build:
 
 dev:
 	yarn dev
-
-prod:
-	yarn migrate && \
-	sh build.sh && \
-	node dist/server.js
