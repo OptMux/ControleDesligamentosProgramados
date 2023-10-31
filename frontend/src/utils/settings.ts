@@ -1,3 +1,9 @@
+import type { ApplicationMode } from "../enums/url";
+import { getApiUrl } from "./urlUtils";
+
+const MODE: ApplicationMode = import.meta.env.VITE_MODE;
+
 export const settings = {
-  apiUrl: import.meta.env.VITE_API_URL,
+  mode: MODE,
+  apiUrl: getApiUrl(MODE),
 };
