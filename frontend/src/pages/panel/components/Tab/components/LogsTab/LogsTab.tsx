@@ -2,7 +2,7 @@ import * as PS from "../../Tab.Styles";
 import * as S from "./LogsTab.Styles";
 import { useTypedSelector } from "../../../../../../hooks/useTypedSelector";
 import { useDispatch } from "react-redux";
-import { createRef, useCallback, useEffect } from "react";
+import { createRef, useCallback, useEffect, useLayoutEffect } from "react";
 import { doGetLogs } from "../../../../../../store/ducks/logs/logsThunks";
 import { Spinner } from "@fluentui/react-components";
 import {
@@ -31,6 +31,17 @@ export const LogsTab: React.FC = function () {
     scrollTop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
+
+  useLayoutEffect(() => {
+    if (
+      logs.pageParams &&
+      (wrapperRef.current?.clientHeight as any) >=
+        (wrapperRef.current?.scrollHeight as any)
+    ) {
+      dispatch(doGetLogs({}) as any);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logs.pageParams]);
 
   return (
     <>
