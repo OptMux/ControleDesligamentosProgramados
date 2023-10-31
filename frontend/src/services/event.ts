@@ -65,6 +65,6 @@ export async function deleteEvent(id: SystemEvent["id"]): Promise<void> {
   try {
     await withAuth.delete(`${ApiRoutes.updateEvent}/${id}`);
   } catch (err: any) {
-    throw new Error(err?.response?.data?.message ?? "update event error");
+    throw new Error(err?.response?.data?.message ?? "delete event error");
   }
 }

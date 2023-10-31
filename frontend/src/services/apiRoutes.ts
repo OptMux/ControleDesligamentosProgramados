@@ -7,4 +7,7 @@ export const ApiRoutes = Object.freeze({
   getLogs: "/log",
   updateEvent: "/event",
   createEvent: "/event",
+  createEventException: "/exception",
+  getEventExceptions: "/exception",
+  deleteEventException: "/exception",
 });

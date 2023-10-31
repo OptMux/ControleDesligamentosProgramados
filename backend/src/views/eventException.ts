@@ -14,6 +14,15 @@ eventExceptionRouter.get("/", async (req, res) => {
   const rawPageCursor = (req.query.datePageCursor as any) || null;
   const pageCursor = rawPageCursor ? new Date(rawPageCursor) : null;
   const order = (req.query.order || "desc") as "asc" | "desc";
+  const search = (req.query.search as string) || null;
+
+  let where: any;
+  if (search)
+    where = {
+      description: {
+        contains: search,
+      },
+    };
 
   const eventExceptions = await prisma.systemEventException.findMany({
     orderBy: {
@@ -28,6 +37,7 @@ eventExceptionRouter.get("/", async (req, res) => {
           },
         }
       : null),
+    where,
   });
 
   const lastEventException = eventExceptions[limit];
@@ -43,6 +53,7 @@ eventExceptionRouter.get("/", async (req, res) => {
             idPageCursor: lastEventException.id,
             datePageCursor: lastEventException.date.toISOString(),
             order,
+            ...(search ? { search: search as string } : {}),
           }).toString(),
         }
       : null),
@@ -59,11 +70,14 @@ eventExceptionRouter.post("/", onlyAdmin, async (req, res) => {
   } = req.body;
 
   try {
-    const event = await createSystemEventException(description, new Date(date));
+    const eventException = await createSystemEventException(
+      description,
+      new Date(date)
+    );
     res.status(HttpStatus.CREATED).json({
       message: "event exception created successfully",
       data: {
-        event,
+        eventException,
       },
     });
   } catch (err: any) {

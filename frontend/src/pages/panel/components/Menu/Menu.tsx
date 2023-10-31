@@ -1,4 +1,6 @@
 import {
+  Calendar20Filled,
+  Calendar20Regular,
   CalendarClock20Filled,
   CalendarClock20Regular,
   DocumentTextClock20Filled,
@@ -14,6 +16,12 @@ const MENUS: MenuItemProps[] = [
     text: "eventos",
     activeIcon: CalendarClock20Filled,
     inactiveIcon: CalendarClock20Regular,
+  },
+  {
+    id: TabName.excecoes,
+    text: "exceções",
+    activeIcon: Calendar20Filled,
+    inactiveIcon: Calendar20Regular,
   },
   {
     id: TabName.logs,
