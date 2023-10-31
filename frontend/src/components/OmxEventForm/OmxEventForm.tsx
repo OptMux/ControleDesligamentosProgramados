@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import * as S from "./OmxEventForm.Styles";
+import DatePicker from "react-datepicker";
 import { useToast } from "../../hooks/useToast";
 import { ToastStatus } from "../../hooks/useToastPrivate";
 import { SystemEvent } from "../../store/ducks/events/events.types";
-import DatePicker from "react-datepicker";
+import { dateFactory } from "../../utils/date";
+import * as S from "./OmxEventForm.Styles";
 
 interface DataProps {
   event?: SystemEvent;
@@ -31,10 +32,10 @@ export const OmxEventForm: React.FC<OmxEventFormProps> = function ({
   const notify = useToast();
 
   const [startDate, setStartDate] = useState(
-    event?.startDate ? new Date(event?.startDate) : new Date()
+    event?.startDate ? new Date(event?.startDate) : dateFactory(10, 0)
   );
   const [finishDate, setFinishDate] = useState(
-    event?.finishDate ? new Date(event?.finishDate) : new Date()
+    event?.finishDate ? new Date(event?.finishDate) : dateFactory(14, 0)
   );
 
   const [descriptionValue, setDescriptionValue] = useState(
