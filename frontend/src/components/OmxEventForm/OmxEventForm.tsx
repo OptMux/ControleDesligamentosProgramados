@@ -3,12 +3,7 @@ import * as S from "./OmxEventForm.Styles";
 import { useToast } from "../../hooks/useToast";
 import { ToastStatus } from "../../hooks/useToastPrivate";
 import { SystemEvent } from "../../store/ducks/events/events.types";
-import DatePicker, { registerLocale } from "react-datepicker";
-
-import "react-datepicker/dist/react-datepicker.css";
-
-import ptBR from "date-fns/locale/pt-BR";
-registerLocale("pt-BR", ptBR);
+import DatePicker from "react-datepicker";
 
 interface DataProps {
   event?: SystemEvent;
@@ -18,7 +13,7 @@ interface DataProps {
   >;
 }
 
-interface OmxSearchBoxProps {
+interface OmxEventFormProps {
   event?: SystemEvent;
   isLoading?: boolean;
   onConfirm: (data: DataProps) => void;
@@ -27,7 +22,7 @@ interface OmxSearchBoxProps {
 
 const DESCRIPTION_CHAR_LIMIT = 128;
 
-export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
+export const OmxEventForm: React.FC<OmxEventFormProps> = function ({
   event,
   isLoading = false,
   onConfirm,

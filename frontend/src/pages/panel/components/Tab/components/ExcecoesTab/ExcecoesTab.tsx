@@ -5,6 +5,7 @@ import { OmxSearchBox } from "../../../../../../components/OmxSearchBox/OmxSearc
 import { useToast } from "../../../../../../hooks/useToast";
 import { useTypedSelector } from "../../../../../../hooks/useTypedSelector";
 import {
+  doCreateEventException,
   doDeleteEventException,
   doGetEventExceptions,
 } from "../../../../../../store/ducks/eventExceptions/eventExceptionsThunks";
@@ -12,6 +13,7 @@ import * as PS from "../../Tab.Styles";
 import { Card } from "./Card/Card";
 import * as S from "./ExcecoesTab.Styles";
 import { ToastStatus } from "../../../../../../hooks/useToastPrivate";
+import { OmxEventExceptionForm } from "../../../../../../components/OmxEventExceptionForm/OmxEventExceptionForm";
 
 export const ExcecoesTab: React.FC = function () {
   const dispatch = useDispatch();
@@ -21,7 +23,8 @@ export const ExcecoesTab: React.FC = function () {
   const notify = useToast();
 
   const [isSearchBoxVisible, setIsSearchBoxVisible] = useState(false);
-  const [isEventFormVisible, setIsEventFormVisible] = useState(false);
+  const [isEventExceptionFormVisible, setIsEventExceptionFormVisible] =
+    useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [valueToSearch, setValueToSearch] = useState(searchValue);
 
@@ -85,41 +88,41 @@ export const ExcecoesTab: React.FC = function () {
             onClick={() => {
               setSearchValue("");
               setIsSearchBoxVisible(false);
-              setIsEventFormVisible(!isEventFormVisible);
+              setIsEventExceptionFormVisible(!isEventExceptionFormVisible);
             }}
           >
             Adicionar novo
           </S.Button>
-          {/* {isEventFormVisible && (
+          {isEventExceptionFormVisible && (
             <S.EventFormFloatingWrapper>
-              <OmxEventForm
-                onConfirm={({ eventData }) => {
+              <OmxEventExceptionForm
+                onConfirm={({ eventExceptionData }) => {
                   dispatch(
                     doCreateEventException({
-                      eventData,
+                      eventExceptionData,
                       callback(err) {
                         if (err)
                           return notify({
-                            id: `omxEventFormCreateApiError`,
+                            id: `omxEventExceptionFormCreateApiError`,
                             title: "Api error",
                             body: err?.message ?? "api error",
                             status: ToastStatus.error,
                           });
                         notify({
-                          id: `omxEventFormCreateApiSuccess`,
+                          id: `omxEventExceptionFormCreateApiSuccess`,
                           title: "Event",
-                          body: "event created successfully",
+                          body: "event exception created successfully",
                           status: ToastStatus.success,
                         });
-                        setIsEventFormVisible(false);
+                        setIsEventExceptionFormVisible(false);
                       },
                     }) as any
                   );
                 }}
-                onCancel={() => setIsEventFormVisible(false)}
+                onCancel={() => setIsEventExceptionFormVisible(false)}
               />
             </S.EventFormFloatingWrapper>
-          )} */}
+          )}
         </S.HeaderButtonsWrapper>
       </S.Header>
       <S.Wrapper>

@@ -17,6 +17,10 @@ export const Wrapper = styled.div`
   scrollbar-width: thin;
   scrollbar-color: #00000040 #0000;
 
+  & * {
+    flex-shrink: 0;
+  }
+
   ${DefaultScrollbar}
 `;
 
@@ -38,6 +42,7 @@ export const Button = styled.button`
   display: flex;
   align-items: center;
   height: 42px;
+  min-height: 42px;
   padding: 0 24px;
   border-radius: 8px;
   background: ${colors.blue};
