@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as S from "./OmxEventForm.Styles";
-import {
-  CURRENT_YEAR,
-  getDateInfo,
-  useDateForm,
-} from "../../hooks/useDateForm";
 import { useToast } from "../../hooks/useToast";
 import { ToastStatus } from "../../hooks/useToastPrivate";
 import { SystemEvent } from "../../store/ducks/events/events.types";
+import DatePicker, { registerLocale } from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
+
+import ptBR from "date-fns/locale/pt-BR";
+registerLocale("pt-BR", ptBR);
 
 interface DataProps {
   event?: SystemEvent;
@@ -26,93 +27,16 @@ interface OmxSearchBoxProps {
 
 const DESCRIPTION_CHAR_LIMIT = 128;
 
-const getDatePickerInputs = (formCreator: ReturnType<typeof useDateForm>) => {
-  const dateUnits: {
-    placeholder: string;
-    dispatch: (value: number) => void;
-    value: number | null;
-    min?: number;
-    max?: number;
-  }[] = [
-    {
-      placeholder: "DD",
-      dispatch: formCreator.actions.setDay,
-      value: formCreator.state.day,
-      min: 1,
-      max: 31,
-    },
-    {
-      placeholder: "MM",
-      dispatch: formCreator.actions.setMonth,
-      value: formCreator.state.month,
-      min: 1,
-      max: 12,
-    },
-    {
-      placeholder: "YYYY",
-      dispatch: formCreator.actions.setYear,
-      value: formCreator.state.year,
-      min: CURRENT_YEAR,
-      max: 9999,
-    },
-    {
-      placeholder: "HH",
-      dispatch: formCreator.actions.setHour,
-      value: formCreator.state.hour,
-      min: 0,
-      max: 23,
-    },
-    {
-      placeholder: "MM",
-      dispatch: formCreator.actions.setMinute,
-      value: formCreator.state.minute,
-      min: 0,
-      max: 59,
-    },
-  ];
-
-  const elements = dateUnits.map((unit) => (
-    <S.Input
-      key={unit.placeholder}
-      type="number"
-      placeholder={unit.placeholder}
-      max={unit.max}
-      min={unit.min}
-      $paddingLeft={5}
-      $paddingRight={0}
-      value={(unit.value as any) ?? ""}
-      onChange={(ev) => {
-        const value = parseInt(ev?.target?.value);
-        unit.dispatch((isNaN(value) ? null : value) as number);
-      }}
-    />
-  ));
-  return [elements.slice(0, 3), elements.slice(3)];
-};
-
 export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
   event,
   isLoading = false,
   onConfirm,
   onCancel,
 }) {
-  const startDate = useDateForm(
-    event
-      ? getDateInfo(event.startDate)
-      : {
-          hour: 10,
-          minute: 0,
-        }
-  );
-  const finishDate = useDateForm(
-    event
-      ? getDateInfo(event.finishDate)
-      : {
-          hour: 14,
-          minute: 0,
-        }
-  );
   const notify = useToast();
+
+  const [startDate, setStartDate] = useState(event?.startDate ?? new Date());
+  const [finishDate, setFinishDate] = useState(event?.finishDate ?? new Date());
 
   const [descriptionValue, setDescriptionValue] = useState(
     event?.description ?? ""
@@ -123,6 +47,30 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
 
   const cancelRef = useRef<typeof onCancel>();
   const clickedRef = useRef<boolean>(false);
+
+  const isCalendarOpenRef = useRef<{ value: boolean; timeout: any }>({
+    value: false,
+    timeout: null,
+  });
+
+  const onCalendarOpen = useCallback(() => {
+    clearTimeout(isCalendarOpenRef.current?.timeout);
+    isCalendarOpenRef.current = {
+      value: true,
+      timeout: null,
+    };
+  }, []);
+
+  const onCalendarClose = useCallback(() => {
+    clearTimeout(isCalendarOpenRef.current?.timeout);
+    isCalendarOpenRef.current = {
+      value: isCalendarOpenRef.current?.value ?? false,
+      timeout: setTimeout(() => {
+        isCalendarOpenRef.current.value = false;
+        isCalendarOpenRef.current.timeout = null;
+      }, 100),
+    };
+  }, []);
 
   const onCancelHandler = useCallback(() => {
     if (!isLoading) return onCancel?.();
@@ -137,6 +85,8 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
         clickedRef.current = true;
         return;
       }
+
+      if (isCalendarOpenRef.current?.value) return;
 
       if (
         !(
@@ -164,13 +114,6 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
     };
   }, []);
 
-  const DatePickerInputs = useMemo(() => {
-    return {
-      start: getDatePickerInputs(startDate),
-      finish: getDatePickerInputs(finishDate),
-    };
-  }, [startDate, finishDate]);
-
   return (
     <S.WrapperForm
       ref={containerRef}
@@ -184,18 +127,15 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
           eventData: {
             title: data.get("title") as string,
             description: data.get("description") as string,
-            startDate: startDate.resultDate,
-            finishDate: finishDate.resultDate,
+            startDate: startDate,
+            finishDate: finishDate,
           },
         };
 
         if (
-          [
-            resultData.eventData.title,
-            resultData.eventData.description,
-            startDate.valid,
-            finishDate.valid,
-          ].every(Boolean)
+          [resultData.eventData.title, resultData.eventData.description].every(
+            Boolean
+          )
         )
           return onConfirm?.(resultData);
 
@@ -234,15 +174,33 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
       <S.InputWrapper>
         <S.DateInputLabel>Início</S.DateInputLabel>
         <S.DateInputGroupWrapper>
-          <S.DateInputGroup>{DatePickerInputs.start[0]}</S.DateInputGroup>
-          <S.DateInputGroup>{DatePickerInputs.start[1]}</S.DateInputGroup>
+          <S.DateInputGroup>
+            <DatePicker
+              selected={startDate}
+              showTimeInput
+              locale="pt-BR"
+              dateFormat="Pp"
+              onCalendarOpen={onCalendarOpen}
+              onCalendarClose={onCalendarClose}
+              onChange={(date) => setStartDate(date as Date)}
+            />
+          </S.DateInputGroup>
         </S.DateInputGroupWrapper>
       </S.InputWrapper>
       <S.InputWrapper>
         <S.DateInputLabel>Término</S.DateInputLabel>
         <S.DateInputGroupWrapper>
-          <S.DateInputGroup>{DatePickerInputs.finish[0]}</S.DateInputGroup>
-          <S.DateInputGroup>{DatePickerInputs.finish[1]}</S.DateInputGroup>
+          <S.DateInputGroup>
+            <DatePicker
+              selected={finishDate}
+              showTimeInput
+              locale="pt-BR"
+              dateFormat="Pp"
+              onCalendarOpen={onCalendarOpen}
+              onCalendarClose={onCalendarClose}
+              onChange={(date) => setFinishDate(date as Date)}
+            />
+          </S.DateInputGroup>
         </S.DateInputGroupWrapper>
       </S.InputWrapper>
       <S.ButtonGroup>

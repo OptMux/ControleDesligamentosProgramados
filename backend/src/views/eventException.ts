@@ -4,6 +4,7 @@ import { prisma } from "../db";
 import { onlyAdmin } from "../middlewares/onlyAdmin";
 import { SystemEventException } from "@prisma/client";
 import { createSystemEventException } from "../procedures/createSystemEventException";
+import { deleteSystemEventException } from "../procedures/deleteSystemEventException";
 
 export const eventExceptionRouter = Router();
 
@@ -70,4 +71,18 @@ eventExceptionRouter.post("/", onlyAdmin, async (req, res) => {
       message: err?.message,
     });
   }
+});
+
+eventExceptionRouter.delete("/:exceptionId", onlyAdmin, async (req, res) => {
+  const { exceptionId } = req.params;
+
+  const result = await deleteSystemEventException(exceptionId);
+
+  if (result)
+    return res.status(HttpStatus.OK).json({
+      message: "system exception deleted successfully",
+    });
+  res.status(HttpStatus.NOT_FOUND).json({
+    message: "event exception not found",
+  });
 });

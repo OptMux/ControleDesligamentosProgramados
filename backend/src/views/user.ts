@@ -67,6 +67,6 @@ userRouter.delete("/:userId", onlyAdmin, async (req, res) => {
       message: "user deleted successfully",
     });
   res.status(HttpStatus.NOT_FOUND).json({
-    message: "event not found or already started/finished",
+    message: "user not found",
   });
 });

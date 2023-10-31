@@ -13,6 +13,8 @@ export const WrapperForm = styled.form<WrapperFormProps>`
   align-items: center;
   gap: 12px;
 
+  min-width: 343px;
+
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: ${colors.fg};
@@ -130,6 +132,31 @@ export const DateInputGroupWrapper = styled.div`
   width: 100%;
   gap: 12px;
   justify-content: space-between;
+  flex-direction: column;
+
+  & div.react-datepicker-wrapper {
+    width: 100%;
+  }
+
+  & input {
+    gap: 10px;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.25);
+    height: 32px;
+
+    width: 100%;
+    color: ${colors.black};
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    outline: none;
+    border: none;
+
+    padding-right: 16px;
+    padding-left: 16px;
+  }
 `;
 
 export const DateInputGroup = styled.div`
