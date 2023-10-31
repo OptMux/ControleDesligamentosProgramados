@@ -1,11 +1,10 @@
 import { Router } from "express";
+import { prisma } from "../db";
 import { HttpStatus } from "../enums/requests";
 import { AuthRequest } from "../middlewares/auth.types";
 import { onlyAdmin } from "../middlewares/onlyAdmin";
-import { withAuth } from "../middlewares/withAuth";
 import { createUser } from "../procedures/createUser";
 import { deleteUser } from "../procedures/deleteUser";
-import { prisma } from "../db";
 
 export const userRouter = Router();
 
