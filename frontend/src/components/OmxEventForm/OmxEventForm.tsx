@@ -35,8 +35,12 @@ export const OmxEventForm: React.FC<OmxSearchBoxProps> = function ({
 }) {
   const notify = useToast();
 
-  const [startDate, setStartDate] = useState(event?.startDate ?? new Date());
-  const [finishDate, setFinishDate] = useState(event?.finishDate ?? new Date());
+  const [startDate, setStartDate] = useState(
+    event?.startDate ? new Date(event?.startDate) : new Date()
+  );
+  const [finishDate, setFinishDate] = useState(
+    event?.finishDate ? new Date(event?.finishDate) : new Date()
+  );
 
   const [descriptionValue, setDescriptionValue] = useState(
     event?.description ?? ""
