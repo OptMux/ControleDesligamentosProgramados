@@ -1,9 +1,9 @@
 import { prisma } from "../db";
 import { startAllPins } from "../procedures/io";
 import { startEvent } from "../procedures/startEvent";
-import { canStartEvents } from "../utils/canStartEvents";
 import { checkHourRange } from "../utils/checkHourRange";
 import { Debug } from "../utils/debug";
+import { haveEventExceptions } from "../utils/haveEventExceptions";
 import { Scheduler } from "./Scheduler";
 
 export const StartEventsScheduler = new Scheduler(async () => {
@@ -18,7 +18,7 @@ export const StartEventsScheduler = new Scheduler(async () => {
   });
 
   if ([0, 6].includes(now.getDay()) && checkHourRange(10, 14) === 0) {
-    const canStart = await canStartEvents();
+    const canStart = !(await haveEventExceptions());
     if (canStart) startAllPins();
   }
 

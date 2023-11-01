@@ -1,6 +1,6 @@
 import { prisma } from "../db";
 
-export async function canStartEvents(): Promise<boolean> {
+export async function haveEventExceptions(): Promise<boolean> {
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0);
   const todayEnd = new Date();
@@ -15,5 +15,5 @@ export async function canStartEvents(): Promise<boolean> {
     },
   });
 
-  return !systemEventException;
+  return !!systemEventException;
 }
