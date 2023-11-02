@@ -1,5 +1,5 @@
 import { prisma } from "../db";
-import { startAllPins } from "../procedures/io";
+import { startGpio } from "../procedures/io";
 import { startEvent } from "../procedures/startEvent";
 import { checkHourRange } from "../utils/checkHourRange";
 import { Debug } from "../utils/debug";
@@ -13,13 +13,16 @@ export const StartEventsScheduler = new Scheduler(async () => {
       startDate: {
         lte: now,
       },
+      finishDate: {
+        gt: now,
+      },
       startedAt: null,
     },
   });
 
   if ([0, 6].includes(now.getDay()) && checkHourRange(10, 14) === 0) {
     const canStart = !(await haveEventExceptions());
-    if (canStart) startAllPins();
+    if (canStart) startGpio();
   }
 
   if (events.length > 0)
@@ -27,8 +30,8 @@ export const StartEventsScheduler = new Scheduler(async () => {
 
   for (const event of events) {
     try {
+      await startGpio();
       await startEvent(event);
-      startAllPins();
     } catch (err) {
       console.error(err);
     }

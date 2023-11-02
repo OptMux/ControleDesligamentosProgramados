@@ -19,6 +19,31 @@ export async function createEvent(
   if (startDate.getTime() <= Date.now())
     throw new Error("startDate must be greater than current date");
 
+  let existingEvent = await prisma.systemEvent.findFirst({
+    where: {
+      startDate: {
+        lte: startDate,
+      },
+      finishDate: {
+        gte: startDate,
+      },
+    },
+  });
+  if (!existingEvent)
+    existingEvent = await prisma.systemEvent.findFirst({
+      where: {
+        startDate: {
+          lte: finishDate,
+        },
+        finishDate: {
+          gte: finishDate,
+        },
+      },
+    });
+
+  if (existingEvent)
+    throw new Error("an event in this datetime already exists");
+
   const event = await prisma.systemEvent.create({
     data: {
       title,

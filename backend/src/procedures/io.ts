@@ -1,4 +1,4 @@
-import type { Gpio as GpioType } from "onoff";
+import type { BinaryValue, Gpio as GpioType } from "onoff";
 import { settings } from "../settings";
 
 function getGpio(): typeof GpioType {
@@ -15,27 +15,38 @@ function getGpio(): typeof GpioType {
 
 const Gpio = getGpio();
 
-const OUT_PINS = Gpio.accessible
-  ? settings.pins.map((value) => new Gpio(value, "high"))
-  : [];
+function getPins() {
+  if (!Gpio.accessible) return;
+  const outputPin = new Gpio(settings.outputPin, "out");
+  const inputPin = new Gpio(settings.inputPin, "in");
+  const alarmPin = new Gpio(settings.alarmPin, "out");
+
+  alarmPin.writeSync(0);
+
+  return {
+    outputPin,
+    inputPin,
+    alarmPin,
+  };
+}
+
+const PINS = getPins();
 
 const data = {
   isStarted: false,
 };
 
-function pulsePins(timeoutInSeconds = 5): Promise<void> {
+function pulsePin(pin: GpioType, timeoutInSeconds = 5): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (!Gpio.accessible) reject(new Error("cannot pulse pins"));
+    if (!Gpio.accessible) reject(new Error("cannot pulse pin"));
     try {
-      for (const gpio of OUT_PINS) {
-        gpio.writeSync(1);
-      }
+      pin?.writeSync?.(1);
     } catch (err) {
       reject(err);
     }
     setTimeout(() => {
       try {
-        for (const gpio of OUT_PINS) gpio.writeSync(0);
+        pin?.writeSync?.(0);
         resolve();
       } catch (err) {
         reject(err);
@@ -44,22 +55,65 @@ function pulsePins(timeoutInSeconds = 5): Promise<void> {
   });
 }
 
-export async function startAllPins(timeoutInSeconds = 5) {
-  if (data.isStarted) return;
-  data.isStarted = true;
-  try {
-    await pulsePins(timeoutInSeconds);
-  } catch (err) {
-    console.error("[gpio error] - cannot start some gpio pins");
-  }
+async function fireAlarm(
+  timeoutInSeconds = settings.alarmPinPulseTimeoutInSeconds
+) {
+  if (!PINS) return;
+  return await pulsePin(PINS?.alarmPin, timeoutInSeconds);
 }
 
-export async function stopAllPins(timeoutInSeconds = 5) {
-  if (!data.isStarted) return;
-  data.isStarted = false;
+function readPin(pin: GpioType, delayInSeconds = 30): Promise<BinaryValue> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        resolve(pin?.readSync?.());
+      } catch (err) {
+        reject(err);
+      }
+    }, delayInSeconds * 30);
+  });
+}
+
+export async function startGpio(
+  timeoutInSeconds = settings.outputPinPulseTimeoutInSeconds
+) {
+  if (data.isStarted || !PINS) return;
+  data.isStarted = true;
+  let isActivated = false;
   try {
-    await pulsePins(timeoutInSeconds);
+    await pulsePin(PINS.outputPin, timeoutInSeconds);
+    isActivated = true;
+  } catch (err) {
+    console.error("[gpio error] - cannot start some gpio pins");
+    data.isStarted = false;
+  }
+
+  if (
+    isActivated &&
+    (await readPin(PINS.inputPin, settings.inputPinReadDelayInSeconds)) === 1
+  ) {
+    fireAlarm();
+    throw new Error("cannot be started");
+  } else throw new Error("cannot be started");
+}
+
+export async function stopGpio(
+  timeoutInSeconds = settings.outputPinPulseTimeoutInSeconds
+) {
+  if (!data.isStarted || !PINS) return;
+  data.isStarted = false;
+  let isActivated = false;
+  try {
+    await pulsePin(PINS.outputPin, timeoutInSeconds);
+    isActivated = true;
   } catch (err) {
     console.error("[gpio error] - cannot stop some gpio pins");
   }
+  if (
+    isActivated &&
+    (await readPin(PINS.inputPin, settings.inputPinReadDelayInSeconds)) === 0
+  ) {
+    fireAlarm();
+    throw new Error("cannot be stopped");
+  } else throw new Error("cannot be stopped");
 }

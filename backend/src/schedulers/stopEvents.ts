@@ -1,5 +1,5 @@
 import { prisma } from "../db";
-import { stopAllPins } from "../procedures/io";
+import { stopGpio } from "../procedures/io";
 import { stopEvent } from "../procedures/stopEvent";
 import { checkHourRange } from "../utils/checkHourRange";
 import { Debug } from "../utils/debug";
@@ -22,7 +22,7 @@ export const StopEventsScheduler = new Scheduler(async () => {
 
   if ([0, 6].includes(now.getDay()) && checkHourRange(10, 14) === 1) {
     const canStop = !(await haveEventExceptions());
-    if (canStop) stopAllPins();
+    if (canStop) stopGpio();
   }
 
   if (events.length > 0)
@@ -30,8 +30,8 @@ export const StopEventsScheduler = new Scheduler(async () => {
 
   for (const event of events) {
     try {
+      await stopGpio();
       await stopEvent(event);
-      stopAllPins();
     } catch (err) {
       console.error(err);
     }
