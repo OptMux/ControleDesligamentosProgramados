@@ -1,19 +1,6 @@
-import type { BinaryValue, Gpio as GpioType } from "onoff";
+import type { BinaryValue } from "onoff";
+import { Gpio } from "onoff";
 import { settings } from "../settings";
-
-function getGpio(): typeof GpioType {
-  try {
-    const { Gpio } = require("onoff");
-    return Gpio;
-  } catch (err) {
-    console.log("[gpio error]:", err);
-    return {
-      accessible: false,
-    } as any;
-  }
-}
-
-const Gpio = getGpio();
 
 function getPins() {
   if (!Gpio.accessible) return;
@@ -36,7 +23,7 @@ const data = {
   isStarted: false,
 };
 
-function pulsePin(pin: GpioType, timeoutInSeconds = 5): Promise<void> {
+function pulsePin(pin: Gpio, timeoutInSeconds = 5): Promise<void> {
   return new Promise((resolve, reject) => {
     if (!Gpio.accessible) reject(new Error("cannot pulse pin"));
     try {
@@ -62,7 +49,7 @@ async function fireAlarm(
   return await pulsePin(PINS?.alarmPin, timeoutInSeconds);
 }
 
-function readPin(pin: GpioType, delayInSeconds = 30): Promise<BinaryValue> {
+function readPin(pin: Gpio, delayInSeconds = 30): Promise<BinaryValue> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       try {

@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const MODE = process.env.NODE_ENV ?? "production";
@@ -33,6 +34,7 @@ module.exports = {
     },
   },
   plugins: [
+    new webpack.ExternalsPlugin("commonjs", ["onoff"]),
     new CopyWebpackPlugin({
       patterns: [
         path.resolve(__dirname, "prisma", "schema.prisma"),
