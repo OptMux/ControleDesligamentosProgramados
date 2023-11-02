@@ -8,7 +8,7 @@ if [ "$1" == "--also-back" ]; then
 fi
 
 cd "frontend/";
-npm run build:prod;
+npx yarn build:prod;
 if [ -e "./dist" ]; then
     if [ -e "../backend/cdp" ]; then
         rm -r "../backend/cdp";
