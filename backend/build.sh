@@ -10,15 +10,15 @@ fi
 
 build_command="build:pack";
 
-if [ $1 == "--dev" ]; then
+if [ "$1" == "--dev" ]; then
     build_command="build:pack:dev";
 fi
 
-yarn migrate;
+npm run migrate;
 
-yarn generate;
+npm run generate;
 
-yarn "$build_command";
+npm run $build_command;
 
 if [ -d $build_dir ]; then
     cp $db_folder/$schema_file $build_dir;

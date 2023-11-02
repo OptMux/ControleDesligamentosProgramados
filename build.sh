@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $1 == "--also-back" ]; then
+if [ "$1" == "--also-back" ]; then
     echo "also building backend..."
     cd "backend/";
     sh "./build.sh";
@@ -8,7 +8,7 @@ if [ $1 == "--also-back" ]; then
 fi
 
 cd "frontend/";
-yarn build:prod;
+npm run build:prod;
 if [ -e "./dist" ]; then
     if [ -e "../backend/cdp" ]; then
         rm -r "../backend/cdp";
