@@ -39,6 +39,7 @@ module.exports = {
       patterns: [
         path.resolve(__dirname, "prisma", "schema.prisma"),
         path.resolve(__dirname, "prisma", "dev.db"),
+        path.resolve(__dirname, "init.sh"),
         path.resolve(__dirname, ".env"),
         {
           from: path.resolve(__dirname, "prisma", "client"),
