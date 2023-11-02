@@ -1,5 +1,19 @@
-import { Gpio } from "onoff";
+import type { Gpio as GpioType } from "onoff";
 import { settings } from "../settings";
+
+function getGpio(): typeof GpioType {
+  try {
+    const { Gpio } = require("onoff");
+    return Gpio;
+  } catch (err) {
+    console.log("[gpio error]:", err);
+    return {
+      accessible: false,
+    } as any;
+  }
+}
+
+const Gpio = getGpio();
 
 const OUT_PINS = Gpio.accessible
   ? settings.pins.map((value) => new Gpio(value, "high"))
@@ -13,7 +27,9 @@ function pulsePins(timeoutInSeconds = 5): Promise<void> {
   return new Promise((resolve, reject) => {
     if (!Gpio.accessible) reject(new Error("cannot pulse pins"));
     try {
-      for (const gpio of OUT_PINS) gpio.writeSync(1);
+      for (const gpio of OUT_PINS) {
+        gpio.writeSync(1);
+      }
     } catch (err) {
       reject(err);
     }

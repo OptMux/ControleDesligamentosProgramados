@@ -1,14 +1,17 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
+const MODE = process.env.NODE_ENV ?? "production";
+
 module.exports = {
-  mode: "production",
+  mode: MODE,
   target: "node",
   entry: path.resolve(__dirname, "src", "server.ts"),
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "server.js",
   },
+  ...(MODE === "development" && { devtool: "eval" }),
   resolve: {
     extensions: [".js", ".ts"],
     fallback: {

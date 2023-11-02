@@ -8,7 +8,8 @@
     "build": "tsc",
     "migrate": "prisma migrate dev --name init",
     "studio": "prisma studio",
-    "build:pack": "webpack --mode production",
+    "build:pack": "NODE_ENV=production webpack --mode production",
+    "build:pack:dev": "NODE_ENV=development webpack --mode development",
     "generate": "prisma generate"
   },
   "dependencies": {
